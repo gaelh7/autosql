@@ -1,0 +1,116 @@
+Language: Cpp
+Standard: Auto
+
+ColumnLimit: 80
+IndentWidth: 2
+ConstructorInitializerIndentWidth: 2
+ContinuationIndentWidth: 4
+
+InsertNewlineAtEOF: true
+LineEnding: CRLF
+KeepEmptyLinesAtEOF: false
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1
+
+AccessModifierOffset: -2
+EmptyLineAfterAccessModifier: Never
+EmptyLineBeforeAccessModifier: LogicalBlock
+
+DerivePointerAlignment: false
+PointerAlignment: Left
+ReferenceAlignment: Pointer
+QualifierAlignment: Custom
+QualifierOrder: [friend, static, inline, constexpr, const, volatile, type]
+
+AlignAfterOpenBracket: Align
+AlignArrayOfStructures: Left
+AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveBitFields: Consecutive
+AlignOperands: Align
+AlignTrailingComments:
+  Kind: Always
+
+AllowAllArgumentsOnNextLine: true
+AllowShortBlocksOnASingleLine: Always
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortEnumsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortLambdasOnASingleLine: All
+AllowShortLoopsOnASingleLine: true
+BinPackArguments: true
+PackConstructorInitializers: NextLine
+
+AlwaysBreakTemplateDeclarations: Yes
+BreakAfterAttributes: Never
+BreakBeforeBinaryOperators: None
+BreakBeforeBraces: Attach
+BreakBeforeConceptDeclarations: Always
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: BeforeColon
+BreakInheritanceList: BeforeColon
+BreakStringLiterals: true
+SeparateDefinitionBlocks: Always
+
+UseTab: Never
+BitFieldColonSpacing: Both
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: true
+SpaceAroundPointerQualifiers: Default
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCaseColon: true
+SpaceBeforeCpp11BracedList: false
+Cpp11BracedListStyle: true
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeSquareBrackets: false
+SpacesBeforeTrailingComments: 2
+SpacesInAngles: Never
+SpacesInParens: Never
+SpacesInSquareBrackets: false
+SpacesInLineCommentPrefix:
+  Minimum: 1
+  Maximum: -1
+
+ReflowComments: true
+
+IndentRequiresClause: true
+RequiresClausePosition: OwnLine
+RequiresExpressionIndentation: OuterScope
+IndentWrappedFunctionNames: false
+
+CompactNamespaces: false
+FixNamespaceComments: true
+NamespaceIndentation: None
+
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex:           '^<.*\.h>'
+    Priority:        1
+  - Regex:           '^<.*'
+    Priority:        2
+  - Regex:           '.*'
+    Priority:        3
+IncludeIsMainRegex: '(_test)?$'
+SortIncludes: CaseInsensitive
+SortUsingDeclarations: LexicographicNumeric
+
+IntegerLiteralSeparator:
+  Binary:          0
+  BinaryMinDigits: 0
+  Decimal:         0
+  DecimalMinDigits: 0
+  Hex:             0
+  HexMinDigits:    0
+
+PenaltyBreakComment: 300
+PenaltyBreakFirstLessLess: 120
+PenaltyBreakOpenParenthesis: 0
+PenaltyBreakString: 1000
+PenaltyBreakTemplateDeclaration: 10
+PenaltyExcessCharacter: 1000000
+PenaltyIndentedWhitespace: 0
+PenaltyReturnTypeOnItsOwnLine: 200
