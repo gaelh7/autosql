@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+
+# Build directories
+build/
+
+# vscode files
+.vscode/
+
+# clangd
+.cache/
