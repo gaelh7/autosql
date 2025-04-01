@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "autosql/constraint.h"
+#include "autosql/sqlparse.h"
 
 namespace asql {
 enum Type {};
@@ -68,7 +69,7 @@ public:
 
       if (sql.substr(token_pos, 7) == "DEFAULT") {
         token_pos     = sql.find('(', token_pos + 7) + 1;
-        token_end_pos = sql.find(')', token_pos);
+        token_end_pos = closing_par(sql, token_pos - 1);
         expr          = sql.substr(token_pos, token_end_pos - token_pos);
         token_pos     = sql.find_first_not_of(" \t\r\n", token_end_pos + 1);
         continue;
@@ -76,7 +77,7 @@ public:
 
       if (sql.substr(token_pos, 2) == "AS") {
         token_pos     = sql.find('(', token_pos + 2) + 1;
-        token_end_pos = sql.find(')', token_pos);
+        token_end_pos = closing_par(sql, token_pos - 1);
         expr          = sql.substr(token_pos, token_end_pos - token_pos);
         generated     = true;
         token_pos     = sql.find_first_not_of(" \t\r\n", token_end_pos + 1);
@@ -88,7 +89,7 @@ public:
         token_end_pos    = sql.find_first_of(" \t\r\n(", token_pos);
         reference.first  = sql.substr(token_pos, token_end_pos - token_pos);
         token_pos        = sql.find('(', token_end_pos) + 1;
-        token_end_pos    = sql.find(')', token_pos);
+        token_end_pos    = closing_par(sql, token_pos - 1);
         reference.second = sql.substr(token_pos, token_end_pos - token_pos);
         token_pos        = sql.find_first_not_of(" \t\r\n", token_end_pos + 1);
         continue;
@@ -97,7 +98,7 @@ public:
       if (sql.substr(token_pos, 5) == "CHECK") {
         curr.type     = ConstraintType::CHECK;
         token_pos     = sql.find('(', token_pos + 5) + 1;
-        token_end_pos = sql.find(')', token_pos);
+        token_end_pos = closing_par(sql, token_pos - 1);
         curr.expr     = sql.substr(token_pos, token_end_pos - token_pos);
         constraints.push_back(curr);
         token_pos = sql.find_first_not_of(" \t\r\n", token_end_pos + 1);
