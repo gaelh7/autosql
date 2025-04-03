@@ -26,82 +26,57 @@ public:
   Column() = default;
 
   Column(std::string_view sql) {
-    size_t token_pos     = sql.find_first_not_of(" \t\r\n");
-    size_t token_end_pos = sql.find_first_of(" \t\r\n", token_pos);
-    name                 = sql.substr(token_pos, token_end_pos - token_pos);
+    Tokenizer parser{sql};
 
-    token_pos     = sql.find_first_not_of(" \t\r\n", token_end_pos);
-    token_end_pos = sql.find_first_of(" \t\r\n", token_pos);
-    type          = sql.substr(token_pos, token_end_pos - token_pos);
+    name = parser.next_token();
+    type = parser.next_token();
 
-    token_pos = sql.find_first_not_of(" \t\r\n", token_end_pos);
-
-    parse_contraints(sql.substr(token_pos));
+    parse_contraints(parser);
   }
 
-  inline void parse_contraints(std::string_view sql) {
-    size_t token_pos = sql.find_first_not_of(" \t\r\n");
-    size_t token_end_pos;
-    while (token_pos != std::string_view::npos) {
+  inline void parse_contraints(Tokenizer parser) {
+    while (!parser.done()) {
       Constraint curr;
-      if (sql.substr(token_pos, 10) == "CONSTRAINT") {
-        token_pos     = sql.find_first_not_of(" \t\r\n", token_pos + 10);
-        token_end_pos = sql.find_first_of(" \t\r\n", token_pos);
-        curr.name     = sql.substr(token_pos, token_end_pos - token_pos);
-        token_pos     = sql.find_first_not_of(" \t\r\n", token_end_pos);
+      std::string_view token = parser.next_token();
+      if (token == "CONSTRAINT") {
+        curr.name = parser.next_token();
+        token     = parser.next_token();
       }
 
-      if (sql.substr(token_pos, 3) == "NOT") {
-        token_pos = sql.find_first_not_of(" \t\r\n", token_pos + 3);
-        if (sql.substr(token_pos, 4) == "NULL") {
-          not_null  = true;
-          token_pos = sql.find_first_not_of(" \t\r\n", token_pos + 4);
+      if (token == "NOT") {
+        if (parser.next_token() == "NULL") {
+          not_null = true;
           continue;
         }
         // TODO error
       }
 
-      if (sql.substr(token_pos, 6) == "UNIQUE") {
-        unique    = true;
-        token_pos = sql.find_first_not_of(" \t\r\n", token_pos + 6);
+      if (token == "UNIQUE") {
+        unique = true;
         continue;
       }
 
-      if (sql.substr(token_pos, 7) == "DEFAULT") {
-        token_pos     = sql.find('(', token_pos + 7) + 1;
-        token_end_pos = closing_par(sql, token_pos - 1);
-        expr          = sql.substr(token_pos, token_end_pos - token_pos);
-        token_pos     = sql.find_first_not_of(" \t\r\n", token_end_pos + 1);
+      if (token == "DEFAULT") {
+        expr = parser.next_token();
         continue;
       }
 
-      if (sql.substr(token_pos, 2) == "AS") {
-        token_pos     = sql.find('(', token_pos + 2) + 1;
-        token_end_pos = closing_par(sql, token_pos - 1);
-        expr          = sql.substr(token_pos, token_end_pos - token_pos);
-        generated     = true;
-        token_pos     = sql.find_first_not_of(" \t\r\n", token_end_pos + 1);
+      if (token == "AS") {
+        expr      = parser.next_token();
+        generated = true;
         continue;
       }
 
-      if (sql.substr(token_pos, 10) == "REFERENCES") {
-        token_pos        = sql.find_first_not_of(" \t\r\n", token_pos + 10);
-        token_end_pos    = sql.find_first_of(" \t\r\n(", token_pos);
-        reference.first  = sql.substr(token_pos, token_end_pos - token_pos);
-        token_pos        = sql.find('(', token_end_pos) + 1;
-        token_end_pos    = closing_par(sql, token_pos - 1);
-        reference.second = sql.substr(token_pos, token_end_pos - token_pos);
-        token_pos        = sql.find_first_not_of(" \t\r\n", token_end_pos + 1);
+      if (token == "REFERENCES") {
+        reference.first  = parser.next_token();
+        reference.second = parser.next_token();
         continue;
       }
 
-      if (sql.substr(token_pos, 5) == "CHECK") {
-        curr.type     = ConstraintType::CHECK;
-        token_pos     = sql.find('(', token_pos + 5) + 1;
-        token_end_pos = closing_par(sql, token_pos - 1);
-        curr.expr     = sql.substr(token_pos, token_end_pos - token_pos);
+      if (token == "CHECK") {
+        curr.type = ConstraintType::CHECK;
+        curr.expr = parser.next_token();
         constraints.push_back(curr);
-        token_pos = sql.find_first_not_of(" \t\r\n", token_end_pos + 1);
         continue;
       }
 

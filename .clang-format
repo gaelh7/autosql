@@ -59,7 +59,7 @@ SpaceAfterLogicalNot: false
 SpaceAfterTemplateKeyword: true
 SpaceAroundPointerQualifiers: Default
 SpaceBeforeAssignmentOperators: true
-SpaceBeforeCaseColon: true
+SpaceBeforeCaseColon: false
 SpaceBeforeCpp11BracedList: false
 Cpp11BracedListStyle: true
 SpaceBeforeCtorInitializerColon: true
@@ -81,6 +81,7 @@ IndentRequiresClause: true
 RequiresClausePosition: OwnLine
 RequiresExpressionIndentation: OuterScope
 IndentWrappedFunctionNames: false
+IndentCaseLabels: true
 
 CompactNamespaces: false
 FixNamespaceComments: true
