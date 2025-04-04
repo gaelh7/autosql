@@ -1,9 +1,7 @@
 #include <iostream>
-#include <sstream>
 #include <string>
 
 #include "autosql/table.h"
-#include "autosql/sqlparse.h"
 
 std::string sql = "\t \nCREATE \t\n TABLE\t\r \nT1 ("
                   "  id INTEGER NOT NULL DEFAULT (0), -- This is a comment\n"
@@ -17,41 +15,20 @@ std::string sql = "\t \nCREATE \t\n TABLE\t\r \nT1 ("
                   "  info VARCHAR REFERENCES T1(info)"
                   ") PRIMARY KEY (id, id2);";
 
-int main() {
-  std::istringstream sstream(sql);
-  asql::Tokenizer parser{sql};
+std::string t1 = "CREATE TABLE test ("
+                  "  id INTEGER NOT NULL DEFAULT (0),"
+                  "  ignored INTEGER"
+                  ");";
+std::string t2 = "CREATE TABLE test ("
+                  "  id INTEGER NOT NULL DEFAULT (0),"
+                  "  id2 INTEGER UNIQUE DEFAULT (1) CHECK (info + 1 = 2 * (info + 4)),"
+                  "  id3 TEXT DEFAULT ('abc')"
+                  ");";
 
-  for (auto token = parser.next_token(); token != ""; token = parser.next_token()) {
-    std::cout << token << '\n';
-  }
-  // Opens the file for reading
-  std::string line;
-  while (std::getline(sstream, line, ';')) {
-    asql::Table t(line);
-    std::cout << "name: " << t.name << "\n";
-    std::cout << "  primary key: ";
-    for (auto& key: t.primary_key) {
-      std::cout << key << ", ";
-    }
-    std::cout << '\n';
-    for (auto& column : t.columns) {
-      std::cout << "  column name: " << column.name << "\n";
-      std::cout << "    type: " << column.type << "\n";
-      std::cout << "    unique: " << column.unique << "\n";
-      std::cout << "    not null: " << column.not_null << "\n";
-      std::cout << "    generated: " << column.generated << "\n";
-      std::cout << "    default: " << column.expr << "\n";
-      std::cout << "    references: " << column.reference.first << ", "
-                << column.reference.second << "\n";
-      std::cout << "    constraints: \n";
-      for (auto& constraint : column.constraints) {
-        std::cout << "      name: " << constraint.name << "\n";
-        std::cout << "      type: " << static_cast<int>(constraint.type)
-                  << "\n";
-        std::cout << "      expression: " << constraint.expr << "\n";
-      }
-    }
-    std::cout << std::flush;
-  }
+int main() {
+  asql::Table table1{t1};
+  asql::Table table2{t2};
+  asql::TableDiff diff{table1, table2};
+  std::cout << diff.sql() << std::endl;
   return 0;
 }
