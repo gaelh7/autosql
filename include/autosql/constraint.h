@@ -1,24 +1,15 @@
 #pragma once
 
-#include <stdexcept>
 #include <string>
 
 namespace asql {
 
+enum class ConstraintType { CHECK, REFERENCE, UNIQUE };
+
 class Constraint {
 public:
   std::string name;
+  std::string reference;
   std::string expr;
-};
-
-class ConstraintDiff {
-public:
-  std::string name;
-  std::string expr;
-
-  ConstraintDiff(Constraint lhs, Constraint rhs) : name{rhs.name}, expr{rhs.expr} {
-    if (lhs.name != rhs.name)
-      throw std::invalid_argument("Rename operations not supported");
-  }
 };
 }  // namespace asql

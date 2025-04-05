@@ -16,11 +16,11 @@ std::string sql = "\t \nCREATE \t\n TABLE\t\r \nT1 ("
                   ") PRIMARY KEY (id, id2);";
 
 std::string t1 = "CREATE TABLE test ("
-                  "  id INTEGER NOT NULL DEFAULT (0),"
+                  "  id INTEGER DEFAULT (0),"
                   "  ignored INTEGER"
                   ");";
 std::string t2 = "CREATE TABLE test ("
-                  "  id INTEGER NOT NULL DEFAULT (0),"
+                  "  id INTEGER NOT NULL UNIQUE DEFAULT (5),"
                   "  id2 INTEGER UNIQUE DEFAULT (1) CHECK (info + 1 = 2 * (info + 4)),"
                   "  id3 TEXT DEFAULT ('abc')"
                   ");";

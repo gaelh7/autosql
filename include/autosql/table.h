@@ -1,11 +1,13 @@
 #pragma once
 
 #include <optional>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include "autosql/column.h"
+#include "autosql/constraint.h"
 #include "autosql/sqlparse.h"
 
 namespace asql {
@@ -46,7 +48,7 @@ public:
   std::string name;
   std::vector<Column> add;
   std::vector<std::string> drop;
-  std::vector<ColumnDiff> alter;
+  std::vector<std::pair<Column, Column>> alter;
   std::optional<std::vector<std::string>> primary_key;
 
   TableDiff(Table lhs, Table rhs) : name{rhs.name} {
@@ -77,31 +79,164 @@ public:
       result += " ";
       result += col.type;
       if (col.not_null) result += " NOT NULL";
-      if (col.unique) result += " UNIQUE";
-      if (col.expr != "") {
+      if (!col.expr.empty()) {
         if (col.generated) result += " GENERATED ALWAYS AS (";
         else result += " DEFAULT (";
         result += col.expr;
-        result += ')';
+        result += ")";
       }
-      if (col.reference.first != "") {
-        result += ' ';
-        result += col.reference.first;
-        result += '(';
-        result += col.reference.second;
-        result += ')';
-      }
-      if (col.constraint.expr != "") {
-        if (col.constraint.name != "") {
-          result += " CONSTRAINT ";
-          result += col.constraint.name;
+      for (auto& [type, con] : col.constraints) {
+        result += " CONSTRAINT ";
+        result += con.name;
+        switch (type) {
+          case ConstraintType::CHECK:
+            result += " CHECK (";
+            result += con.expr;
+            result += ')';
+            break;
+          case ConstraintType::REFERENCE:
+            result += " REFERENCES ";
+            result += con.reference;
+            result += '(';
+            result += con.expr;
+            result += ')';
+            break;
+          case ConstraintType::UNIQUE:
+            result += " UNIQUE";
+            break;
+            result += " DEFAULT (";
+            result += con.expr;
+            result += ')';
+            break;
         }
-        result += " CHECK ";
-        result += '(';
-        result += col.constraint.expr;
-        result += ')';
       }
       result += ';';
+    }
+    for (auto& [lhs, rhs] : alter) {
+      if (lhs.type != rhs.type) {
+        result += "ALTER TABLE ";
+        result += name;
+        result += " ALTER COLUMN ";
+        result += rhs.name;
+        result += " TYPE ";
+        result += rhs.type;
+        result += ';';
+      }
+      if (lhs.not_null) {
+        if (!rhs.not_null) {
+          result += "ALTER TABLE ";
+          result += name;
+          result += " ALTER COLUMN ";
+          result += rhs.name;
+          result += " DROP NOT NULL;";
+        }
+      } else if (rhs.not_null) {
+        result += "ALTER TABLE ";
+        result += name;
+        result += " ALTER COLUMN ";
+        result += rhs.name;
+        result += " SET NOT NULL;";
+      }
+      if (!rhs.expr.empty() && !rhs.generated) {
+        if (lhs.expr.empty() || lhs.generated || lhs.expr != rhs.expr) {
+          result += "ALTER TABLE ";
+          result += name;
+          result += " ALTER COLUMN ";
+          result += rhs.name;
+          result += " SET DEFAULT (";
+          result += rhs.expr;
+          result += ");";
+        }
+      } else if (!lhs.expr.empty() && !lhs.generated) {
+        result += "ALTER TABLE ";
+        result += name;
+        result += " ALTER COLUMN ";
+        result += rhs.name;
+        result += " DROP DEFAULT;";
+      }
+      if (!rhs.expr.empty() && rhs.generated) {
+        if (lhs.expr.empty() || !lhs.generated || lhs.expr != rhs.expr) {
+          result += "ALTER TABLE ";
+          result += name;
+          result += " ALTER COLUMN ";
+          result += rhs.name;
+          result += " SET EXPRESSION (";
+          result += rhs.expr;
+          result += ");";
+        }
+      } else if (!lhs.expr.empty() && lhs.generated) {
+        result += "ALTER TABLE ";
+        result += name;
+        result += " ALTER COLUMN ";
+        result += rhs.name;
+        result += " DROP EXPRESSION;";
+      }
+      for (auto& [type, con] : lhs.constraints) {
+        if (!rhs.constraints.contains(type)) {
+          result += "ALTER TABLE ";
+          result += name;
+          result += " DROP CONSTRAINT ";
+          result += con.name;
+          result += ';';
+        }
+      }
+      for (auto& [type, con] : rhs.constraints) {
+        auto lhs_it = lhs.constraints.find(type);
+        if (lhs_it != lhs.constraints.end()) {
+          bool is_equal = true;
+          switch (type) {
+            case ConstraintType::CHECK:
+              is_equal = lhs_it->second.expr == con.expr;
+              break;
+            case ConstraintType::REFERENCE:
+              is_equal = lhs_it->second.expr != con.expr &&
+                         lhs_it->second.reference != con.reference;
+              break;
+            case ConstraintType::UNIQUE: break;
+          }
+          if (is_equal) {
+            if (lhs_it->second.name != con.name) {
+              result += "ALTER TABLE ";
+              result += name;
+              result += " RENAME CONSTRAINT ";
+              result += lhs_it->second.name;
+              result += " TO ";
+              result += con.name;
+              result += ';';
+            }
+            continue;
+          } else {
+            result += "ALTER TABLE ";
+            result += name;
+            result += " DROP CONSTRAINT ";
+            result += con.name;
+            result += ';';
+          }
+        }
+        result += "ALTER TABLE ";
+        result += name;
+        result += " ADD ";
+        result += con.name;
+        switch (type) {
+          case ConstraintType::CHECK:
+            result += " CHECK (";
+            result += con.expr;
+            result += ");";
+            break;
+          case ConstraintType::REFERENCE:
+            result += " REFERENCES ";
+            result += con.reference;
+            result += '(';
+            result += con.expr;
+            result += ");";
+            break;
+          case ConstraintType::UNIQUE:
+            result += " UNIQUE (";
+            result += rhs.name;
+            result += ");";
+            break;
+        }
+      }
     }
     for (std::string_view col : drop) {
       result += "ALTER TABLE ";
