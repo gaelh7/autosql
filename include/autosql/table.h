@@ -9,6 +9,7 @@
 #include "autosql/column.h"
 #include "autosql/constraint.h"
 #include "autosql/sqlparse.h"
+#include "autosql/token.h"
 
 namespace asql {
 
@@ -18,24 +19,37 @@ public:
   std::unordered_map<std::string, Column> columns;
   std::vector<std::string> primary_key;
 
-  Table(std::string_view sql) {
-    Tokenizer parser{sql};
-    if (parser.next_token() != "CREATE" || parser.next_token() != "TABLE") {
+  Table(Tokenizer& parser) {
+    if (parser.next_token().type_ != TokenType::CREATE_T ||
+        parser.next_token().type_ != TokenType::TABLE_T ||
+        parser.state != ParseState::TABLE) {
       return;
     }
-    name = parser.next_token();
-    Tokenizer column_parser{parser.next_token()};
-    while (!column_parser.done()) {
-      Column col{column_parser.until(",")};
+    name         = parser.next_token().raw_;
+    parser.next_token();
+    parser.state = ParseState::COLUMN;
+    while (parser.state == ParseState::COLUMN) {
+      Column col{parser};
       columns[col.name] = col;
     }
     if (parser.done()) return;
 
-    if (parser.next_token() == "PRIMARY") {
-      if (parser.next_token() == "KEY") {
-        Tokenizer pkey_parser{parser.next_token()};
-        while (!pkey_parser.done()) {
-          primary_key.push_back(std::string{pkey_parser.until(",")});
+    if (parser.next_token().type_ == TokenType::PRIMARY_T) {
+      if (parser.next_token().type_ == TokenType::KEY_T &&
+          parser.next_token().type_ == TokenType::OPEN_PAR_T) {
+        parser.state = ParseState::PRIMARY_KEY;
+        while (parser.state == ParseState::PRIMARY_KEY) {
+          Token t = parser.next_token();
+          if (t.type_ != TokenType::IDENTIFIER_T) break;  // TODO error
+          primary_key.push_back(t.raw_);
+
+          switch (parser.next_token().type_) {
+            case TokenType::COMMA_T: break;
+            case TokenType::CLOSE_PAR_T:
+              parser.state = ParseState::TABLE;
+              break;
+            default: break;  // TODO error
+          }
         }
       }
       // TODO error
@@ -79,34 +93,30 @@ public:
       result += " ";
       result += col.type;
       if (col.not_null) result += " NOT NULL";
-      if (!col.expr.empty()) {
+      if (!col.expr.raw_.empty()) {
         if (col.generated) result += " GENERATED ALWAYS AS (";
         else result += " DEFAULT (";
-        result += col.expr;
+        result += col.expr.raw_;
         result += ")";
       }
       for (auto& [type, con] : col.constraints) {
         result += " CONSTRAINT ";
-        result += con.name;
+        result += con.name_;
         switch (type) {
           case ConstraintType::CHECK:
             result += " CHECK (";
-            result += con.expr;
+            result += std::get<0>(con.val_).raw_;
             result += ')';
             break;
           case ConstraintType::REFERENCE:
             result += " REFERENCES ";
-            result += con.reference;
+            result += std::get<1>(con.val_).first;
             result += '(';
-            result += con.expr;
+            result += std::get<1>(con.val_).second;
             result += ')';
             break;
           case ConstraintType::UNIQUE:
             result += " UNIQUE";
-            break;
-            result += " DEFAULT (";
-            result += con.expr;
-            result += ')';
             break;
         }
       }
@@ -137,34 +147,34 @@ public:
         result += rhs.name;
         result += " SET NOT NULL;";
       }
-      if (!rhs.expr.empty() && !rhs.generated) {
-        if (lhs.expr.empty() || lhs.generated || lhs.expr != rhs.expr) {
+      if (!rhs.expr.raw_.empty() && !rhs.generated) {
+        if (lhs.expr.raw_.empty() || lhs.generated || lhs.expr.raw_ != rhs.expr.raw_) {
           result += "ALTER TABLE ";
           result += name;
           result += " ALTER COLUMN ";
           result += rhs.name;
           result += " SET DEFAULT (";
-          result += rhs.expr;
+          result += rhs.expr.raw_;
           result += ");";
         }
-      } else if (!lhs.expr.empty() && !lhs.generated) {
+      } else if (!lhs.expr.raw_.empty() && !lhs.generated) {
         result += "ALTER TABLE ";
         result += name;
         result += " ALTER COLUMN ";
         result += rhs.name;
         result += " DROP DEFAULT;";
       }
-      if (!rhs.expr.empty() && rhs.generated) {
-        if (lhs.expr.empty() || !lhs.generated || lhs.expr != rhs.expr) {
+      if (!rhs.expr.raw_.empty() && rhs.generated) {
+        if (lhs.expr.raw_.empty() || !lhs.generated || lhs.expr.raw_ != rhs.expr.raw_) {
           result += "ALTER TABLE ";
           result += name;
           result += " ALTER COLUMN ";
           result += rhs.name;
           result += " SET EXPRESSION (";
-          result += rhs.expr;
+          result += rhs.expr.raw_;
           result += ");";
         }
-      } else if (!lhs.expr.empty() && lhs.generated) {
+      } else if (!lhs.expr.raw_.empty() && lhs.generated) {
         result += "ALTER TABLE ";
         result += name;
         result += " ALTER COLUMN ";
@@ -176,7 +186,7 @@ public:
           result += "ALTER TABLE ";
           result += name;
           result += " DROP CONSTRAINT ";
-          result += con.name;
+          result += con.name_;
           result += ';';
         }
       }
@@ -186,22 +196,21 @@ public:
           bool is_equal = true;
           switch (type) {
             case ConstraintType::CHECK:
-              is_equal = lhs_it->second.expr == con.expr;
+              is_equal = std::get<0>(lhs_it->second.val_).raw_ == std::get<0>(con.val_).raw_;
               break;
             case ConstraintType::REFERENCE:
-              is_equal = lhs_it->second.expr != con.expr &&
-                         lhs_it->second.reference != con.reference;
+              is_equal = std::get<1>(lhs_it->second.val_) == std::get<1>(con.val_);
               break;
             case ConstraintType::UNIQUE: break;
           }
           if (is_equal) {
-            if (lhs_it->second.name != con.name) {
+            if (lhs_it->second.name_ != con.name_) {
               result += "ALTER TABLE ";
               result += name;
               result += " RENAME CONSTRAINT ";
-              result += lhs_it->second.name;
+              result += lhs_it->second.name_;
               result += " TO ";
-              result += con.name;
+              result += con.name_;
               result += ';';
             }
             continue;
@@ -209,25 +218,25 @@ public:
             result += "ALTER TABLE ";
             result += name;
             result += " DROP CONSTRAINT ";
-            result += con.name;
+            result += con.name_;
             result += ';';
           }
         }
         result += "ALTER TABLE ";
         result += name;
         result += " ADD ";
-        result += con.name;
+        result += con.name_;
         switch (type) {
           case ConstraintType::CHECK:
             result += " CHECK (";
-            result += con.expr;
+            result += std::get<0>(con.val_).raw_;
             result += ");";
             break;
           case ConstraintType::REFERENCE:
             result += " REFERENCES ";
-            result += con.reference;
+            result += std::get<1>(con.val_).first;
             result += '(';
-            result += con.expr;
+            result += std::get<1>(con.val_).second;
             result += ");";
             break;
           case ConstraintType::UNIQUE:

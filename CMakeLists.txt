@@ -7,9 +7,7 @@ project(autosql VERSION 1.0
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_library(autosql INTERFACE
-    include/autosql/sqlparse.h
-    include/autosql/table.h)
+add_library(autosql INTERFACE)
 target_include_directories(autosql INTERFACE include)
 target_compile_features(autosql INTERFACE cxx_std_20)
 

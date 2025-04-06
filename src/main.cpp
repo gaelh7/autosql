@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 
+#include "autosql/sqlparse.h"
 #include "autosql/table.h"
 
 std::string sql = "\t \nCREATE \t\n TABLE\t\r \nT1 ("
@@ -26,8 +27,12 @@ std::string t2 = "CREATE TABLE test ("
                   ");";
 
 int main() {
-  asql::Table table1{t1};
-  asql::Table table2{t2};
+  asql::Tokenizer parser1{t1};
+  parser1.state = asql::ParseState::TABLE;
+  asql::Tokenizer parser2{t2};
+  parser2.state = asql::ParseState::TABLE;
+  asql::Table table1{parser1};
+  asql::Table table2{parser2};
   asql::TableDiff diff{table1, table2};
   std::cout << diff.sql() << std::endl;
   return 0;
