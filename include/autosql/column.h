@@ -22,6 +22,7 @@ public:
   Column() = default;
 
   Column(Tokenizer& parser) {
+    if (parser.state != ParseState::COLUMN) return;  // TODO error
     name = parser.next_token().raw_;
     type = parser.next_token().raw_;
 

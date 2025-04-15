@@ -233,7 +233,7 @@ public:
             result += ");";
             break;
           case ConstraintType::REFERENCE:
-            result += " REFERENCES ";
+            result += " FOREIGN KEY ";
             result += std::get<1>(con.val_).first;
             result += '(';
             result += std::get<1>(con.val_).second;

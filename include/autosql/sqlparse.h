@@ -18,96 +18,63 @@ enum class ParseState {
 };
 
 class Tokenizer {
+std::string data_;
+size_t cursor_;
+
+void skip_comments() {
+  while (cursor_ != std::string::npos) {
+    std::string_view next = std::string_view(data_).substr(cursor_, 2);
+    if (next == "--") {
+      cursor_ = data_.find('\n', cursor_);
+      cursor_ = data_.find_first_not_of(" \t\r\n", cursor_);
+    } else if (next == "/*") {
+      cursor_ = data_.find("*/", cursor_) + 2;
+      cursor_ = data_.find_first_not_of(" \t\r\n", cursor_);
+    } else break;
+  }
+}
 public:
-  std::string data;
-  size_t cursor;
   ParseState state;
 
-  Tokenizer(std::string_view input_data) : data{input_data} {
-    cursor = input_data.find_first_not_of(" \t\r\n");
-
-    while (input_data.substr(cursor, 2) == "--") {
-      cursor = input_data.find('\n', cursor);
-      cursor = input_data.find_first_not_of(" \t\r\n", cursor);
-    }
-  }
-
-  size_t closing_par() {
-    size_t pos   = cursor;
-    size_t count = 1;
-
-    while (count != 0) {
-      ++pos;
-      if (data[pos] == '(') ++count;
-      else if (data[pos] == ')') --count;
-    }
-    return pos;
+  Tokenizer(std::string_view input_data) : data_{input_data} {
+    cursor_ = input_data.find_first_not_of(" \t\r\n");
+    skip_comments();
   }
 
   Token next_token() {
-    if (cursor == std::string::npos) return Token();
-    TokenType type;
-    size_t start_pos = cursor;
+    if (cursor_ == std::string::npos)
+      return Token();  // TODO out of bounds error
+    size_t start_pos = cursor_;
     size_t end_pos;
-    switch (data[start_pos]) {
+    switch (data_[start_pos]) {
       case '"':
       case '\'':
-        type    = TokenType::STRING_LITERAL_T;
-        end_pos = data.find(data[start_pos], start_pos + 1);
+        end_pos = data_.find(data_[start_pos], start_pos + 1);
         ++start_pos;
-        cursor = end_pos + 1;
+        cursor_ = end_pos + 1;
         break;
       case '(':
-        type    = TokenType::OPEN_PAR_T;
-        end_pos = start_pos + 1;
-        cursor  = end_pos;
-        break;
       case ')':
-        type    = TokenType::CLOSE_PAR_T;
-        end_pos = start_pos + 1;
-        cursor  = end_pos;
-        break;
       case ',':
-        type    = TokenType::COMMA_T;
-        end_pos = start_pos + 1;
-        cursor  = end_pos;
-        break;
       case ';':
-        type    = TokenType::SEMICOLON_T;
         end_pos = start_pos + 1;
-        cursor  = end_pos;
+        cursor_  = end_pos;
         break;
       default:
-        type    = TokenType::UNSPECIFIED_T;
-        end_pos = data.find_first_of(" \t\r\n'\"(),;", start_pos);
-        cursor  = end_pos;
+        end_pos = data_.find_first_of(" \t\r\n'\"(),;", start_pos);
+        cursor_  = end_pos;
     }
 
-    if (cursor >= data.length()) {
-      cursor = std::string::npos;
-      return std::string_view(data).substr(start_pos, end_pos - start_pos);
-    }
-    cursor = data.find_first_not_of(" \t\r\n", cursor);
-
-    while (std::string_view(data).substr(cursor, 2) == "--") {
-      cursor = data.find('\n', cursor);
-      cursor = data.find_first_not_of(" \t\r\n", cursor);
-      if (cursor == std::string::npos) break;
+    if (cursor_ >= data_.length()) {
+      cursor_ = std::string::npos;
+    } else {
+      cursor_ = data_.find_first_not_of(" \t\r\n", cursor_);
+      skip_comments();
     }
 
-    return Token(std::string_view(data).substr(start_pos, end_pos - start_pos), type);
+    return Token(std::string_view(data_).substr(start_pos, end_pos - start_pos));
   }
 
-
-  std::string_view until(Token stop_token) {
-    if (cursor == std::string::npos) return "";
-    size_t start_pos = cursor;
-    size_t end_pos   = cursor;
-    while (cursor != std::string::npos && next_token().type_ != stop_token.type_)
-      end_pos = cursor;
-    return std::string_view(data).substr(start_pos, end_pos - start_pos);
-  }
-
-  bool done() { return cursor == std::string::npos; }
+  bool done() { return cursor_ == std::string::npos; }
 };
 }  // namespace asql
