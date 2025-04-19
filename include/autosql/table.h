@@ -19,13 +19,13 @@ public:
   std::unordered_map<std::string, Column> columns;
   std::vector<std::string> primary_key;
 
+  Table() = default;
+
   Table(Tokenizer& parser) {
-    if (parser.next_token().type_ != TokenType::CREATE_T ||
-        parser.next_token().type_ != TokenType::TABLE_T ||
-        parser.state != ParseState::TABLE) {
-      return;
+    if (parser.state != ParseState::TABLE) {
+      return; // TODO: Error
     }
-    name         = parser.next_token().raw_;
+    name = parser.next_token().raw_;
     parser.next_token();
     parser.state = ParseState::COLUMN;
     while (parser.state == ParseState::COLUMN) {
@@ -115,9 +115,7 @@ public:
             result += std::get<1>(con.val_).second;
             result += ')';
             break;
-          case ConstraintType::UNIQUE:
-            result += " UNIQUE";
-            break;
+          case ConstraintType::UNIQUE: result += " UNIQUE"; break;
         }
       }
       result += ';';
@@ -148,7 +146,8 @@ public:
         result += " SET NOT NULL;";
       }
       if (!rhs.expr.raw_.empty() && !rhs.generated) {
-        if (lhs.expr.raw_.empty() || lhs.generated || lhs.expr.raw_ != rhs.expr.raw_) {
+        if (lhs.expr.raw_.empty() || lhs.generated ||
+            lhs.expr.raw_ != rhs.expr.raw_) {
           result += "ALTER TABLE ";
           result += name;
           result += " ALTER COLUMN ";
@@ -165,7 +164,8 @@ public:
         result += " DROP DEFAULT;";
       }
       if (!rhs.expr.raw_.empty() && rhs.generated) {
-        if (lhs.expr.raw_.empty() || !lhs.generated || lhs.expr.raw_ != rhs.expr.raw_) {
+        if (lhs.expr.raw_.empty() || !lhs.generated ||
+            lhs.expr.raw_ != rhs.expr.raw_) {
           result += "ALTER TABLE ";
           result += name;
           result += " ALTER COLUMN ";
@@ -196,10 +196,12 @@ public:
           bool is_equal = true;
           switch (type) {
             case ConstraintType::CHECK:
-              is_equal = std::get<0>(lhs_it->second.val_).raw_ == std::get<0>(con.val_).raw_;
+              is_equal = std::get<0>(lhs_it->second.val_).raw_ ==
+                         std::get<0>(con.val_).raw_;
               break;
             case ConstraintType::REFERENCE:
-              is_equal = std::get<1>(lhs_it->second.val_) == std::get<1>(con.val_);
+              is_equal =
+                  std::get<1>(lhs_it->second.val_) == std::get<1>(con.val_);
               break;
             case ConstraintType::UNIQUE: break;
           }
