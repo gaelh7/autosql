@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdexcept>
 #include <string>
 
 #include "autosql/sqlparse.h"
@@ -13,22 +14,23 @@ public:
   Expression() = default;
 
   Expression(Tokenizer& parser) {
-    if (parser.next_token().type_ != TokenType::OPEN_PAR_T)
-      return;  // TODO error
+    if (parser->type_ != TokenType::OPEN_PAR_T)
+      throw std::runtime_error(
+          "Error: Expressions must be within parentheses.");
 
     size_t par_count = 1;
 
-    while (true) {
-      Token t = parser.next_token();
-      switch (t.type_) {
+    while (!parser.done()) {
+      switch ((++parser)->type_) {
         case TokenType::OPEN_PAR_T: ++par_count; break;
         case TokenType::CLOSE_PAR_T: --par_count; break;
         default: break;
       }
       if (par_count == 0) break;
-      raw_ += t.raw_;
+      raw_ += parser->raw_;
       raw_ += ' ';
     }
+    ++parser;
   }
 };
 }  // namespace asql

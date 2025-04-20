@@ -32,7 +32,7 @@ std::string t2 = "CREATE TABLE test ("
                   "CREATE TABLE test2 ("
                   "  id INTEGER /* NOT NULL */ UNIQUE DEFAULT (5),"
                   "  id2 INTEGER UNIQUE DEFAULT (1) CHECK (info + 1 = 2 * (info + 4)),"
-                  "  id3 TEXT DEFAULT ('abc')"
+                  "  id3 TEXT AS ('abc')"
                   ");";
 
 int main() {

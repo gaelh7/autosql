@@ -21,38 +21,46 @@ public:
 
   Table() = default;
 
-  Table(Tokenizer& parser) {
-    if (parser.state != ParseState::TABLE) {
-      return; // TODO: Error
-    }
-    name = parser.next_token().raw_;
-    parser.next_token();
-    parser.state = ParseState::COLUMN;
-    while (parser.state == ParseState::COLUMN) {
-      Column col{parser};
-      columns[col.name] = col;
-    }
-    if (parser.done()) return;
+  Table(Tokenizer& tokens) {
+    if (tokens.state != ParseState::TABLE)
+      throw std::runtime_error("Error: Unexpected CREATE TABLE statement");
 
-    if (parser.next_token().type_ == TokenType::PRIMARY_T) {
-      if (parser.next_token().type_ == TokenType::KEY_T &&
-          parser.next_token().type_ == TokenType::OPEN_PAR_T) {
-        parser.state = ParseState::PRIMARY_KEY;
-        while (parser.state == ParseState::PRIMARY_KEY) {
-          Token t = parser.next_token();
-          if (t.type_ != TokenType::IDENTIFIER_T) break;  // TODO error
-          primary_key.push_back(t.raw_);
+    name = tokens->raw_;
 
-          switch (parser.next_token().type_) {
+    ++tokens;
+    if (tokens->type_ != TokenType::OPEN_PAR_T)
+      throw std::runtime_error("Error: Expected '('");
+    tokens.state = ParseState::COLUMN;
+    while (tokens.state == ParseState::COLUMN) {
+      ++tokens;
+      columns.try_emplace(tokens->raw_, tokens);
+    }
+    if (tokens->type_ != TokenType::CLOSE_PAR_T)
+      throw std::runtime_error("Error: Expected ')'");
+    ++tokens;
+
+    if (tokens->type_ == TokenType::PRIMARY_T) {
+      if ((++tokens)->type_ == TokenType::KEY_T &&
+          (++tokens)->type_ == TokenType::OPEN_PAR_T) {
+        tokens.state = ParseState::PRIMARY_KEY;
+        while (tokens.state == ParseState::PRIMARY_KEY) {
+          if ((++tokens)->type_ != TokenType::IDENTIFIER_T)
+            throw std::runtime_error(
+                "Error: Expected column name in PRIMARY KEY");
+          primary_key.push_back(tokens->raw_);
+
+          switch ((++tokens)->type_) {
             case TokenType::COMMA_T: break;
             case TokenType::CLOSE_PAR_T:
-              parser.state = ParseState::TABLE;
+              tokens.state = ParseState::TABLE;
               break;
-            default: break;  // TODO error
+            default:
+              throw std::runtime_error(
+                  "Error: Unexpected token in primary key");
           }
         }
       }
-      // TODO error
+      throw std::runtime_error("Error: Unexpected token after PRIMARY");
     }
   }
 };

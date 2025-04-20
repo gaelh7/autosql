@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 
@@ -9,19 +10,24 @@
 
 namespace asql {
 class Database {
-  Tokenizer parser_;
+  Parser parser_;
 
 public:
   std::unordered_map<std::string, Table> tables_;
 
   Database(std::string_view script) : parser_(script) {
-    while (!parser_.done()) {
-      if (parser_.next_token().type_ == TokenType::CREATE_T &&
-          parser_.next_token().type_ == TokenType::TABLE_T) {
-        parser_.state = ParseState::TABLE;
-        Table t{parser_};
-        tables_[t.name] = t;
+    Tokenizer tokens = parser_.begin();
+    while (!tokens.done()) {
+      if (tokens->type_ == TokenType::CREATE_T &&
+          (++tokens)->type_ == TokenType::TABLE_T) {
+        ++tokens;
+        tokens.state = ParseState::TABLE;
+        tables_.try_emplace(tokens->raw_, tokens);
       }
+      if (tokens->type_ != TokenType::SEMICOLON_T) {
+        throw std::runtime_error("Expected ';'");
+      }
+      ++tokens;
     }
   }
 };

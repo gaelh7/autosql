@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 
@@ -23,38 +24,39 @@ public:
 
   Column(Tokenizer& parser) {
     if (parser.state != ParseState::COLUMN) return;  // TODO error
-    name = parser.next_token().raw_;
-    type = parser.next_token().raw_;
+    name = parser->raw_;
+    type = (++parser)->raw_;
 
-    parse_contraints(parser);
+    parse_contraints(++parser);
   }
 
   void parse_contraints(Tokenizer& parser) {
     while (!parser.done()) {
       Constraint curr;
-      Token token = parser.next_token();
-      if (token.type_ == TokenType::CONSTRAINT_T) {
-        curr.name_ = parser.next_token().raw_;
-        token      = parser.next_token();
+      if (parser->type_ == TokenType::CONSTRAINT_T) {
+        curr.name_ = (++parser)->raw_;
+        ++parser;
       }
-      switch (token.type_) {
+      switch (parser->type_) {
         case TokenType::NOT_T:
-          if (parser.next_token().type_ == TokenType::NULL_T) {
+          if ((++parser)->type_ == TokenType::NULL_T) {
             not_null = true;
+            ++parser;
             continue;
           }
-          // TODO error
-          continue;
+          throw std::runtime_error(
+              "Error: Expected symbol 'NULL' following 'NOT'");
         case TokenType::UNIQUE_T:
           if (curr.name_.empty()) {
             curr.name_ += name;
             curr.name_ += "_uq";
           }
           constraints[ConstraintType::UNIQUE] = curr;
+          ++parser;
           continue;
-        case TokenType::DEFAULT_T: expr = Expression(parser); continue;
+        case TokenType::DEFAULT_T: expr = Expression(++parser); continue;
         case TokenType::AS_T:
-          expr      = Expression(parser);
+          expr      = Expression(++parser);
           generated = true;
           continue;
         case TokenType::REFERENCES_T:
@@ -62,20 +64,19 @@ public:
             curr.name_ += name;
             curr.name_ += "_fk";
           }
-          {
-            std::get<1>(curr.val_).first = parser.next_token().raw_;
-            parser.next_token();
-            std::get<1>(curr.val_).second = parser.next_token().raw_;
-            parser.next_token();
-            constraints[ConstraintType::REFERENCE] = curr;
-          }
+          std::get<1>(curr.val_).first = (++parser)->raw_;
+          ++parser;
+          std::get<1>(curr.val_).second = (++parser)->raw_;
+          ++parser;
+          constraints[ConstraintType::REFERENCE] = curr;
+          ++parser;
           continue;
         case TokenType::CHECK_T:
           if (curr.name_.empty()) {
             curr.name_ += name;
             curr.name_ += "_ck";
           }
-          curr.val_                          = Expression(parser);
+          curr.val_                          = Expression(++parser);
           constraints[ConstraintType::CHECK] = curr;
           continue;
         case TokenType::CLOSE_PAR_T: parser.state = ParseState::TABLE; return;

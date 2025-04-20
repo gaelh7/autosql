@@ -6,6 +6,7 @@
 namespace asql {
 enum class TokenType {
   UNSPECIFIED_T,
+  EOF_T,
   IDENTIFIER_T,
   OPEN_PAR_T,
   CLOSE_PAR_T,
