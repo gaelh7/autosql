@@ -22,38 +22,29 @@ public:
   Table() = default;
 
   Table(Tokenizer& tokens) {
-    if (tokens.state != ParseState::TABLE)
-      throw std::runtime_error("Error: Unexpected CREATE TABLE statement");
-
     name = tokens->raw_;
 
     ++tokens;
     if (tokens->type_ != TokenType::OPEN_PAR_T)
       throw std::runtime_error("Error: Expected '('");
-    tokens.state = ParseState::COLUMN;
-    while (tokens.state == ParseState::COLUMN) {
+    while (tokens->type_ != TokenType::CLOSE_PAR_T) {
       ++tokens;
       columns.try_emplace(tokens->raw_, tokens);
     }
-    if (tokens->type_ != TokenType::CLOSE_PAR_T)
-      throw std::runtime_error("Error: Expected ')'");
     ++tokens;
 
     if (tokens->type_ == TokenType::PRIMARY_T) {
       if ((++tokens)->type_ == TokenType::KEY_T &&
           (++tokens)->type_ == TokenType::OPEN_PAR_T) {
-        tokens.state = ParseState::PRIMARY_KEY;
-        while (tokens.state == ParseState::PRIMARY_KEY) {
+        while (tokens->type_ != TokenType::CLOSE_PAR_T) {
           if ((++tokens)->type_ != TokenType::IDENTIFIER_T)
             throw std::runtime_error(
                 "Error: Expected column name in PRIMARY KEY");
           primary_key.push_back(tokens->raw_);
 
           switch ((++tokens)->type_) {
-            case TokenType::COMMA_T: break;
-            case TokenType::CLOSE_PAR_T:
-              tokens.state = ParseState::TABLE;
-              break;
+            case TokenType::COMMA_T:
+            case TokenType::CLOSE_PAR_T: break;
             default:
               throw std::runtime_error(
                   "Error: Unexpected token in primary key");

@@ -58,13 +58,12 @@ inline std::unordered_map<std::string_view, TokenType> keyword_map = {
 
 class Token {
 public:
-std::string raw_;
-TokenType type_;
+  std::string raw_;
+  TokenType type_;
 
   Token() = default;
 
-  Token(std::string_view in): raw_{in} {
-    size_t end;
+  Token(std::string_view in) : raw_{in} {
     switch (in.front()) {
       case '"':
       case '\'':
@@ -94,12 +93,13 @@ TokenType type_;
       case '6':
       case '7':
       case '8':
-      case '9':
-        end = in.find_first_not_of("0123456789", 1);
+      case '9': {
+        size_t end = in.find_first_not_of("0123456789", 1);
         if (end == std::string_view::npos) type_ = TokenType::INT_LITERAL_T;
         else if (in[end] == '.') type_ = TokenType::FLOAT_LITERAL_T;
         raw_ = in;
         return;
+      }
       case ';': type_ = TokenType::SEMICOLON_T; return;
     }
     auto it = keyword_map.find(in);

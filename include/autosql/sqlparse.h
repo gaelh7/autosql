@@ -67,10 +67,7 @@ class Tokenizer {
   }
 
 public:
-  ParseState state;
-
-  Tokenizer(std::string_view input_data)
-    : data_{input_data}, state{ParseState::SCRIPT} {
+  Tokenizer(std::string_view input_data) : data_{input_data} {
     skip_comments();
     next_token();
   }
@@ -90,9 +87,7 @@ public:
     return tmp;
   }
 
-  bool operator==(const Tokenizer& other) {
-    return data_ == other.data_;
-  }
+  bool operator==(const Tokenizer& other) { return data_ == other.data_; }
 
   bool done() { return data_.empty(); }
 };
@@ -103,12 +98,8 @@ class Parser {
 public:
   Parser(std::string_view script) : data_{script} {}
 
-  Tokenizer begin() {
-    return Tokenizer(data_);
-  }
+  Tokenizer begin() { return Tokenizer(data_); }
 
-  Tokenizer end() {
-    return Tokenizer("");
-  }
+  Tokenizer end() { return Tokenizer(""); }
 };
 }  // namespace asql

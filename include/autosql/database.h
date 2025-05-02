@@ -21,7 +21,6 @@ public:
       if (tokens->type_ == TokenType::CREATE_T &&
           (++tokens)->type_ == TokenType::TABLE_T) {
         ++tokens;
-        tokens.state = ParseState::TABLE;
         tables_.try_emplace(tokens->raw_, tokens);
       }
       if (tokens->type_ != TokenType::SEMICOLON_T) {

@@ -23,7 +23,6 @@ public:
   Column() = default;
 
   Column(Tokenizer& parser) {
-    if (parser.state != ParseState::COLUMN) return;  // TODO error
     name = parser->raw_;
     type = (++parser)->raw_;
 
@@ -79,7 +78,7 @@ public:
           curr.val_                          = Expression(++parser);
           constraints[ConstraintType::CHECK] = curr;
           continue;
-        case TokenType::CLOSE_PAR_T: parser.state = ParseState::TABLE; return;
+        case TokenType::CLOSE_PAR_T:
         case TokenType::COMMA_T: return;
         default: break;  // TODO error
       }
