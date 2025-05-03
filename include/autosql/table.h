@@ -22,27 +22,32 @@ public:
   Table() = default;
 
   Table(Tokenizer& tokens) {
-    name = tokens->raw_;
+    name = tokens->data;
 
     ++tokens;
-    if (tokens->type_ != TokenType::OPEN_PAR_T)
+    if (tokens->type != TokenType::OPEN_PAR_T)
       throw std::runtime_error("Error: Expected '('");
-    while (tokens->type_ != TokenType::CLOSE_PAR_T) {
-      ++tokens;
-      columns.try_emplace(tokens->raw_, tokens);
+    while (tokens->type != TokenType::CLOSE_PAR_T) {
+      switch ((++tokens)->type) {
+        case TokenType::IDENTIFIER_T:
+          columns.try_emplace(tokens->data, tokens);
+          break;
+        default:
+          throw std::runtime_error("Error: Expected column or constraint");
+      }
     }
     ++tokens;
 
-    if (tokens->type_ == TokenType::PRIMARY_T) {
-      if ((++tokens)->type_ == TokenType::KEY_T &&
-          (++tokens)->type_ == TokenType::OPEN_PAR_T) {
-        while (tokens->type_ != TokenType::CLOSE_PAR_T) {
-          if ((++tokens)->type_ != TokenType::IDENTIFIER_T)
+    if (tokens->type == TokenType::PRIMARY_T) {
+      if ((++tokens)->type == TokenType::KEY_T &&
+          (++tokens)->type == TokenType::OPEN_PAR_T) {
+        while (tokens->type != TokenType::CLOSE_PAR_T) {
+          if ((++tokens)->type != TokenType::IDENTIFIER_T)
             throw std::runtime_error(
                 "Error: Expected column name in PRIMARY KEY");
-          primary_key.push_back(tokens->raw_);
+          primary_key.push_back(tokens->data);
 
-          switch ((++tokens)->type_) {
+          switch ((++tokens)->type) {
             case TokenType::COMMA_T:
             case TokenType::CLOSE_PAR_T: break;
             default:

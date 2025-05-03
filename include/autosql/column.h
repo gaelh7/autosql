@@ -23,8 +23,8 @@ public:
   Column() = default;
 
   Column(Tokenizer& parser) {
-    name = parser->raw_;
-    type = (++parser)->raw_;
+    name = parser->data;
+    type = (++parser)->data;
 
     parse_contraints(++parser);
   }
@@ -32,13 +32,13 @@ public:
   void parse_contraints(Tokenizer& parser) {
     while (!parser.done()) {
       Constraint curr;
-      if (parser->type_ == TokenType::CONSTRAINT_T) {
-        curr.name_ = (++parser)->raw_;
+      if (parser->type == TokenType::CONSTRAINT_T) {
+        curr.name_ = (++parser)->data;
         ++parser;
       }
-      switch (parser->type_) {
+      switch (parser->type) {
         case TokenType::NOT_T:
-          if ((++parser)->type_ == TokenType::NULL_T) {
+          if ((++parser)->type == TokenType::NULL_T) {
             not_null = true;
             ++parser;
             continue;
@@ -63,9 +63,9 @@ public:
             curr.name_ += name;
             curr.name_ += "_fk";
           }
-          std::get<1>(curr.val_).first = (++parser)->raw_;
+          std::get<1>(curr.val_).first = (++parser)->data;
           ++parser;
-          std::get<1>(curr.val_).second = (++parser)->raw_;
+          std::get<1>(curr.val_).second = (++parser)->data;
           ++parser;
           constraints[ConstraintType::REFERENCE] = curr;
           ++parser;

@@ -9,6 +9,7 @@
 #include "autosql/token.h"
 
 namespace asql {
+
 class Database {
   Parser parser_;
 
@@ -18,12 +19,12 @@ public:
   Database(std::string_view script) : parser_(script) {
     Tokenizer tokens = parser_.begin();
     while (!tokens.done()) {
-      if (tokens->type_ == TokenType::CREATE_T &&
-          (++tokens)->type_ == TokenType::TABLE_T) {
+      if (tokens->type == TokenType::CREATE_T &&
+          (++tokens)->type == TokenType::TABLE_T) {
         ++tokens;
-        tables_.try_emplace(tokens->raw_, tokens);
+        tables_.try_emplace(tokens->data, tokens);
       }
-      if (tokens->type_ != TokenType::SEMICOLON_T) {
+      if (tokens->type != TokenType::SEMICOLON_T) {
         throw std::runtime_error("Expected ';'");
       }
       ++tokens;
