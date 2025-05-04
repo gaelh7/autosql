@@ -1,8 +1,8 @@
 #pragma once
 
+#include <optional>
 #include <stdexcept>
 #include <string>
-#include <unordered_map>
 
 #include "autosql/constraint.h"
 #include "autosql/expression.h"
@@ -12,79 +12,70 @@
 namespace asql {
 
 class Column {
-public:
-  std::string name;
-  std::string type;
-  Expression expr;
-  std::unordered_map<ConstraintType, Constraint> constraints;
-  bool not_null  = false;
-  bool generated = false;
-
-  Column() = default;
-
-  Column(Tokenizer& parser) {
-    name = parser->data;
-    type = (++parser)->data;
-
-    parse_contraints(++parser);
-  }
-
-  void parse_contraints(Tokenizer& parser) {
-    while (!parser.done()) {
-      Constraint curr;
-      if (parser->type == TokenType::CONSTRAINT_T) {
-        curr.name_ = (++parser)->data;
-        ++parser;
+  void parse_contraints(Tokenizer& tokens) {
+    while (!tokens.done()) {
+      std::string con_name;
+      if (tokens->type == TokenType::CONSTRAINT_T) {
+        con_name = (++tokens)->data;
+        ++tokens;
       }
-      switch (parser->type) {
+      switch (tokens->type) {
         case TokenType::NOT_T:
-          if ((++parser)->type == TokenType::NULL_T) {
+          if ((++tokens)->type == TokenType::NULL_T) {
             not_null = true;
-            ++parser;
+            ++tokens;
             continue;
           }
           throw std::runtime_error(
               "Error: Expected symbol 'NULL' following 'NOT'");
         case TokenType::UNIQUE_T:
-          if (curr.name_.empty()) {
-            curr.name_ += name;
-            curr.name_ += "_uq";
-          }
-          constraints[ConstraintType::UNIQUE] = curr;
-          ++parser;
+          if (con_name.empty()) con_name = name + "_uq";
+          unique = Unique{con_name};
+          ++tokens;
           continue;
-        case TokenType::DEFAULT_T: expr = Expression(++parser); continue;
+        case TokenType::DEFAULT_T: expr = Expression(++tokens); continue;
         case TokenType::AS_T:
-          expr      = Expression(++parser);
+          expr      = Expression(++tokens);
           generated = true;
           continue;
-        case TokenType::REFERENCES_T:
-          if (curr.name_.empty()) {
-            curr.name_ += name;
-            curr.name_ += "_fk";
-          }
-          std::get<1>(curr.val_).first = (++parser)->data;
-          ++parser;
-          std::get<1>(curr.val_).second = (++parser)->data;
-          ++parser;
-          constraints[ConstraintType::REFERENCE] = curr;
-          ++parser;
+        case TokenType::REFERENCES_T: {
+          if (con_name.empty()) con_name = name + "_fk";
+          std::string_view table = (++tokens)->data;
+          ++tokens;
+          std::string_view column = (++tokens)->data;
+          ++tokens;
+          reference = ForeignKey{con_name, table, column};
+          ++tokens;
           continue;
+        }
         case TokenType::CHECK_T:
-          if (curr.name_.empty()) {
-            curr.name_ += name;
-            curr.name_ += "_ck";
-          }
-          curr.val_                          = Expression(++parser);
-          constraints[ConstraintType::CHECK] = curr;
+          if (con_name.empty()) con_name = name + "_ck";
+          check = Check{con_name, Expression(++tokens)};
           continue;
         case TokenType::CLOSE_PAR_T:
         case TokenType::COMMA_T: return;
-        default: break;  // TODO error
+        default: throw std::runtime_error("Error: Unknown constraint type");
       }
-      // TODO error
-      break;
     }
+  }
+
+public:
+  std::string name;
+  std::string type;
+  Expression expr;
+  std::optional<Check> check;
+  std::optional<ForeignKey> reference;
+  std::optional<Unique> unique;
+  bool not_null  = false;
+  bool generated = false;
+
+  Column() = default;
+
+  Column(Tokenizer& tokens) {
+    name = tokens->data;
+    type = (++tokens)->data;
+
+    parse_contraints(++tokens);
   }
 };
 }  // namespace asql

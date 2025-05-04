@@ -103,24 +103,26 @@ public:
         result += col.expr.raw_;
         result += ")";
       }
-      for (auto& [type, con] : col.constraints) {
+      if (col.check) {
         result += " CONSTRAINT ";
-        result += con.name_;
-        switch (type) {
-          case ConstraintType::CHECK:
-            result += " CHECK (";
-            result += std::get<0>(con.val_).raw_;
-            result += ')';
-            break;
-          case ConstraintType::REFERENCE:
-            result += " REFERENCES ";
-            result += std::get<1>(con.val_).first;
-            result += '(';
-            result += std::get<1>(con.val_).second;
-            result += ')';
-            break;
-          case ConstraintType::UNIQUE: result += " UNIQUE"; break;
-        }
+        result += col.check->name_;
+        result += " CHECK (";
+        result += col.check->expr_.raw_;
+        result += ')';
+      }
+      if (col.reference) {
+        result += " CONSTRAINT ";
+        result += col.reference->name_;
+        result += " REFERENCES ";
+        result += col.reference->table_;
+        result += '(';
+        result += col.reference->column_;
+        result += ')';
+      }
+      if (col.unique) {
+        result += " CONSTRAINT ";
+        result += col.reference->name_;
+        result += " UNIQUE";
       }
       result += ';';
     }
@@ -185,72 +187,95 @@ public:
         result += rhs.name;
         result += " DROP EXPRESSION;";
       }
-      for (auto& [type, con] : lhs.constraints) {
-        if (!rhs.constraints.contains(type)) {
+
+      if (lhs.check && rhs.check &&
+          lhs.check->expr_.raw_ == rhs.check->expr_.raw_) {
+        if (lhs.check->name_ == rhs.check->name_) {
+          result += "ALTER TABLE ";
+          result += name;
+          result += " RENAME CONSTRAINT ";
+          result += lhs.check->name_;
+          result += " TO ";
+          result += rhs.check->name_;
+          result += ';';
+        }
+      } else {
+        if (lhs.check) {
           result += "ALTER TABLE ";
           result += name;
           result += " DROP CONSTRAINT ";
-          result += con.name_;
+          result += lhs.check->name_;
           result += ';';
         }
-      }
-      for (auto& [type, con] : rhs.constraints) {
-        auto lhs_it = lhs.constraints.find(type);
-        if (lhs_it != lhs.constraints.end()) {
-          bool is_equal = true;
-          switch (type) {
-            case ConstraintType::CHECK:
-              is_equal = std::get<0>(lhs_it->second.val_).raw_ ==
-                         std::get<0>(con.val_).raw_;
-              break;
-            case ConstraintType::REFERENCE:
-              is_equal =
-                  std::get<1>(lhs_it->second.val_) == std::get<1>(con.val_);
-              break;
-            case ConstraintType::UNIQUE: break;
-          }
-          if (is_equal) {
-            if (lhs_it->second.name_ != con.name_) {
-              result += "ALTER TABLE ";
-              result += name;
-              result += " RENAME CONSTRAINT ";
-              result += lhs_it->second.name_;
-              result += " TO ";
-              result += con.name_;
-              result += ';';
-            }
-            continue;
-          } else {
-            result += "ALTER TABLE ";
-            result += name;
-            result += " DROP CONSTRAINT ";
-            result += con.name_;
-            result += ';';
-          }
+        if (rhs.check) {
+          result += "ALTER TABLE ";
+          result += name;
+          result += " ADD ";
+          result += rhs.check->name_;
+          result += " CHECK (";
+          result += rhs.check->expr_.raw_;
+          result += ");";
         }
+      }
+
+      if (lhs.reference && rhs.reference &&
+          lhs.reference->table_ == rhs.reference->table_ &&
+          lhs.reference->column_ == rhs.reference->column_) {
+        if (lhs.reference->name_ == rhs.reference->name_) {
+          result += "ALTER TABLE ";
+          result += name;
+          result += " RENAME CONSTRAINT ";
+          result += lhs.reference->name_;
+          result += " TO ";
+          result += rhs.reference->name_;
+          result += ';';
+        }
+      } else {
+        if (lhs.reference) {
+          result += "ALTER TABLE ";
+          result += name;
+          result += " DROP CONSTRAINT ";
+          result += lhs.reference->name_;
+          result += ';';
+        }
+        if (rhs.reference) {
+          result += "ALTER TABLE ";
+          result += name;
+          result += " ADD ";
+          result += rhs.reference->name_;
+          result += " FOREIGN KEY ";
+          result += rhs.reference->table_;
+          result += '(';
+          result += rhs.reference->column_;
+          result += ");";
+        }
+      }
+
+      if (lhs.unique && rhs.unique) {
+        if (lhs.unique->name_ == rhs.unique->name_) {
+          result += "ALTER TABLE ";
+          result += name;
+          result += " RENAME CONSTRAINT ";
+          result += lhs.unique->name_;
+          result += " TO ";
+          result += rhs.unique->name_;
+          result += ';';
+        }
+      } else if (lhs.unique) {
+        result += "ALTER TABLE ";
+        result += name;
+        result += " DROP CONSTRAINT ";
+        result += lhs.unique->name_;
+        result += ';';
+      } else if (rhs.unique) {
         result += "ALTER TABLE ";
         result += name;
         result += " ADD ";
-        result += con.name_;
-        switch (type) {
-          case ConstraintType::CHECK:
-            result += " CHECK (";
-            result += std::get<0>(con.val_).raw_;
-            result += ");";
-            break;
-          case ConstraintType::REFERENCE:
-            result += " FOREIGN KEY ";
-            result += std::get<1>(con.val_).first;
-            result += '(';
-            result += std::get<1>(con.val_).second;
-            result += ");";
-            break;
-          case ConstraintType::UNIQUE:
-            result += " UNIQUE (";
-            result += rhs.name;
-            result += ");";
-            break;
-        }
+        result += rhs.unique->name_;
+        result += " UNIQUE ";
+        result += '(';
+        result += rhs.name;
+        result += ");";
       }
     }
     for (std::string_view col : drop) {

@@ -17,7 +17,7 @@ std::string sql = "\t \nCREATE \t\n TABLE\t\r \nT1 ("
                   ") PRIMARY KEY (id, id2);";
 
 std::string t1 = "CREATE TABLE test ("
-                  "  id INTEGER DEFAULT (0),"
+                  "  id INTEGER DEFAULT (.5),"
                   "  ignored INTEGER"
                   ");"
                   "CREATE TABLE test2 ("
