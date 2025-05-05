@@ -33,24 +33,19 @@ class Column {
           unique = Unique{con_name};
           ++tokens;
           continue;
-        case TokenType::DEFAULT_T: expr = Expression(++tokens); continue;
+        case TokenType::DEFAULT_T: expr = Expression{++tokens}; continue;
         case TokenType::AS_T:
-          expr      = Expression(++tokens);
+          expr      = Expression{++tokens};
           generated = true;
           continue;
         case TokenType::REFERENCES_T: {
           if (con_name.empty()) con_name = name + "_fk";
-          std::string_view table = (++tokens)->data;
-          ++tokens;
-          std::string_view column = (++tokens)->data;
-          ++tokens;
-          reference = ForeignKey{con_name, table, column};
-          ++tokens;
+          reference = ForeignKey<Column>{con_name, ++tokens};
           continue;
         }
         case TokenType::CHECK_T:
           if (con_name.empty()) con_name = name + "_ck";
-          check = Check{con_name, Expression(++tokens)};
+          check = Check{con_name, ++tokens};
           continue;
         case TokenType::CLOSE_PAR_T:
         case TokenType::COMMA_T: return;
@@ -64,7 +59,7 @@ public:
   std::string type;
   Expression expr;
   std::optional<Check> check;
-  std::optional<ForeignKey> reference;
+  std::optional<ForeignKey<Column>> reference;
   std::optional<Unique> unique;
   bool not_null  = false;
   bool generated = false;
@@ -73,7 +68,13 @@ public:
 
   Column(Tokenizer& tokens) {
     name = tokens->data;
-    type = (++tokens)->data;
+
+    switch ((++tokens)->type) {
+      case TokenType::VARCHAR_T: type = "VARCHAR"; break;
+      case TokenType::INTEGER_T: type = "INTEGER"; break;
+      case TokenType::TEXT_T: type = "TEXT"; break;
+      default: throw std::runtime_error("Error: Not a type");
+    }
 
     parse_contraints(++tokens);
   }

@@ -17,6 +17,9 @@ class Table {
 public:
   std::string name;
   std::unordered_map<std::string, Column> columns;
+  std::vector<Unique> unique_cons;
+  std::vector<Check> check_cons;
+  std::vector<ForeignKey<Table>> ref_cons;
   std::vector<std::string> primary_key;
 
   Table() = default;
@@ -28,9 +31,35 @@ public:
     if (tokens->type != TokenType::OPEN_PAR_T)
       throw std::runtime_error("Error: Expected '('");
     while (tokens->type != TokenType::CLOSE_PAR_T) {
-      switch ((++tokens)->type) {
+      std::string con_name;
+      if ((++tokens)->type == TokenType::CONSTRAINT_T) {
+        con_name = (++tokens)->data;
+        ++tokens;
+      }
+      switch (tokens->type) {
         case TokenType::IDENTIFIER_T:
+          if (!con_name.empty())
+            throw std::runtime_error("Error: Expected constraint");
           columns.try_emplace(tokens->data, tokens);
+          break;
+        case TokenType::UNIQUE_T:
+          if (con_name.empty())
+            con_name = name + "_uq" + std::to_string(unique_cons.size());
+          unique_cons.emplace_back(con_name);
+          ++tokens;
+          break;
+        case TokenType::CHECK_T:
+          if (con_name.empty())
+            con_name = name + "_ck" + std::to_string(check_cons.size());
+          check_cons.emplace_back(con_name, ++tokens);
+          break;
+        case TokenType::FOREIGN_T:
+          if ((++tokens)->type != TokenType::KEY_T)
+            throw std::runtime_error(
+                "Error: Expected keyword 'KEY' in FOREIGN KEY constraint");
+          if (con_name.empty())
+            con_name = name + "_fk" + std::to_string(ref_cons.size());
+          ref_cons.emplace_back(con_name, ++tokens);
           break;
         default:
           throw std::runtime_error("Error: Expected column or constraint");
@@ -121,7 +150,7 @@ public:
       }
       if (col.unique) {
         result += " CONSTRAINT ";
-        result += col.reference->name_;
+        result += col.unique->name_;
         result += " UNIQUE";
       }
       result += ';';

@@ -33,6 +33,7 @@ enum class TokenType {
   AS_T,
   STORED_T,
   PRIMARY_T,
+  FOREIGN_T,
   KEY_T,
 };
 
@@ -54,6 +55,7 @@ inline const std::unordered_map<std::string_view, TokenType> keyword_map = {
     {"AS",         TokenType::AS_T        },
     {"STORED",     TokenType::STORED_T    },
     {"PRIMARY",    TokenType::PRIMARY_T   },
+    {"FOREIGN",    TokenType::FOREIGN_T   },
     {"KEY",        TokenType::KEY_T       },
 };
 
