@@ -28,7 +28,7 @@ public:
         default: break;
       }
       if (par_count == 0) break;
-      raw_ += tokens->data;
+      raw_ += tokens->str();
       raw_ += ' ';
     }
     ++tokens;

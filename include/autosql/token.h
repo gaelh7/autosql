@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <string>
 #include <unordered_map>
 
@@ -59,12 +60,49 @@ inline const std::unordered_map<std::string_view, TokenType> keyword_map = {
     {"KEY",        TokenType::KEY_T       },
 };
 
-struct Token {
-  std::string data;
+class Token {
+  std::string data_;
+
+public:
   TokenType type;
 
   Token() = default;
 
-  Token(std::string_view in, TokenType type) : data{in}, type{type} {}
+  Token(std::string_view in, TokenType type) noexcept : data_{in}, type{type} {}
+
+  std::string_view str() const noexcept {
+    switch (type) {
+      case TokenType::IDENTIFIER_T:
+      case TokenType::STRING_LITERAL_T:
+      case TokenType::FLOAT_LITERAL_T:
+      case TokenType::INT_LITERAL_T: return data_;
+      case TokenType::UNSPECIFIED_T:
+      case TokenType::EOF_T: return "";
+      case TokenType::OPEN_PAR_T: return "(";
+      case TokenType::CLOSE_PAR_T: return ")";
+      case TokenType::SEMICOLON_T: return ";";
+      case TokenType::COMMA_T: return ",";
+      case TokenType::VARCHAR_T: return "VARCHAR";
+      case TokenType::INTEGER_T: return "INTEGER";
+      case TokenType::TEXT_T: return "TEXT";
+      case TokenType::CREATE_T: return "CREATE";
+      case TokenType::TABLE_T: return "TABLE";
+      case TokenType::TYPE_T: return "TYPE";
+      case TokenType::GRANT_T: return "GRANT";
+      case TokenType::CONSTRAINT_T: return "CONSTRAINT";
+      case TokenType::CHECK_T: return "CHECK";
+      case TokenType::REFERENCES_T: return "REFERENCES";
+      case TokenType::DEFAULT_T: return "DEFAULT";
+      case TokenType::UNIQUE_T: return "UNIQUE";
+      case TokenType::NOT_T: return "NOT";
+      case TokenType::NULL_T: return "NULL";
+      case TokenType::AS_T: return "AS";
+      case TokenType::STORED_T: return "STORED";
+      case TokenType::PRIMARY_T: return "PRIMARY";
+      case TokenType::FOREIGN_T: return "FOREIGN";
+      case TokenType::KEY_T: return "KEY";
+    }
+    return ""; // Unreachable
+  }
 };
 }  // namespace asql

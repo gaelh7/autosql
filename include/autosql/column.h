@@ -16,7 +16,7 @@ class Column {
     while (!tokens.done()) {
       std::string con_name;
       if (tokens->type == TokenType::CONSTRAINT_T) {
-        con_name = (++tokens)->data;
+        con_name = (++tokens)->str();
         ++tokens;
       }
       switch (tokens->type) {
@@ -67,7 +67,7 @@ public:
   Column() = default;
 
   Column(Tokenizer& tokens) {
-    name = tokens->data;
+    name = tokens->str();
 
     switch ((++tokens)->type) {
       case TokenType::VARCHAR_T: type = "VARCHAR"; break;

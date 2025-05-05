@@ -25,7 +25,7 @@ public:
   Table() = default;
 
   Table(Tokenizer& tokens) {
-    name = tokens->data;
+    name = tokens->str();
 
     ++tokens;
     if (tokens->type != TokenType::OPEN_PAR_T)
@@ -33,14 +33,14 @@ public:
     while (tokens->type != TokenType::CLOSE_PAR_T) {
       std::string con_name;
       if ((++tokens)->type == TokenType::CONSTRAINT_T) {
-        con_name = (++tokens)->data;
+        con_name = (++tokens)->str();
         ++tokens;
       }
       switch (tokens->type) {
         case TokenType::IDENTIFIER_T:
           if (!con_name.empty())
             throw std::runtime_error("Error: Expected constraint");
-          columns.try_emplace(tokens->data, tokens);
+          columns.try_emplace(std::string{tokens->str()}, tokens);
           break;
         case TokenType::UNIQUE_T:
           if (con_name.empty())
@@ -74,7 +74,7 @@ public:
           if ((++tokens)->type != TokenType::IDENTIFIER_T)
             throw std::runtime_error(
                 "Error: Expected column name in PRIMARY KEY");
-          primary_key.push_back(tokens->data);
+          primary_key.push_back(std::string{tokens->str()});
 
           switch ((++tokens)->type) {
             case TokenType::COMMA_T:

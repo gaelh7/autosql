@@ -42,10 +42,10 @@ public:
   std::string column_;
 
   ForeignKey(std::string_view name, Tokenizer& tokens) : Constraint{name} {
-    table_ = tokens->data;
+    table_ = tokens->str();
     if ((++tokens)->type != TokenType::OPEN_PAR_T)
       throw std::runtime_error("Error: expected '('");
-    column_ = (++tokens)->data;
+    column_ = (++tokens)->str();
     if ((++tokens)->type != TokenType::CLOSE_PAR_T)
       throw std::runtime_error("Error: expected ')'");
     ++tokens;
@@ -62,7 +62,7 @@ public:
     if (tokens->type != TokenType::OPEN_PAR_T)
       throw std::runtime_error("Error: expected '('");
     while (tokens->type != TokenType::CLOSE_PAR_T) {
-      columns_.emplace_back().first = (++tokens)->data;
+      columns_.emplace_back().first = (++tokens)->str();
       switch ((++tokens)->type) {
         case TokenType::COMMA_T:
         case TokenType::CLOSE_PAR_T: break;
@@ -73,16 +73,16 @@ public:
     if ((++tokens)->type != TokenType::REFERENCES_T)
       throw std::runtime_error("Error: Expected keyword 'REFERENCE'");
 
-    table_ = (++tokens)->data;
+    table_ = (++tokens)->str();
     if ((++tokens)->type != TokenType::OPEN_PAR_T)
       throw std::runtime_error("Error: expected '('");
     for (auto& [col, ref] : std::span{columns_}.first(columns_.size() - 1)) {
-      ref = (++tokens)->data;
+      ref = (++tokens)->str();
       if ((++tokens)->type != TokenType::COMMA_T)
         throw std::runtime_error(
             "Error: Not enough references to match number of columns");
     }
-    columns_.back().second = (++tokens)->data;
+    columns_.back().second = (++tokens)->str();
     if ((++tokens)->type != TokenType::CLOSE_PAR_T)
       throw std::runtime_error("Error: expected ')'");
     ++tokens;
