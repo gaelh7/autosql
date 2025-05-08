@@ -8,7 +8,7 @@
 
 #include "autosql/column.h"
 #include "autosql/constraint.h"
-#include "autosql/sqlparse.h"
+#include "autosql/parser.h"
 #include "autosql/token.h"
 
 namespace asql {

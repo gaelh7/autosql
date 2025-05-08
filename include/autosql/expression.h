@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "autosql/sqlparse.h"
+#include "autosql/parser.h"
 #include "autosql/token.h"
 
 namespace asql {

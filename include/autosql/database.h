@@ -1,10 +1,11 @@
 #pragma once
 
+#include <filesystem>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
 
-#include "autosql/sqlparse.h"
+#include "autosql/parser.h"
 #include "autosql/table.h"
 #include "autosql/token.h"
 
@@ -16,7 +17,7 @@ class Database {
 public:
   std::unordered_map<std::string, Table> tables_;
 
-  Database(std::string_view script) : parser_(script) {
+  Database(std::filesystem::path script) : parser_(script) {
     Tokenizer tokens = parser_.begin();
     while (!tokens.done()) {
       if (tokens->type == TokenType::CREATE_T &&
