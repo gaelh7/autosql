@@ -1,16 +1,21 @@
 cmake_minimum_required(VERSION 3.10)
 
 project(autosql VERSION 1.0
-              DESCRIPTION "Automatically produce sql schema diffs"
-              LANGUAGES C CXX)
+                DESCRIPTION "Automatically produce sql schema diffs"
+                LANGUAGES C CXX)
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-add_library(autosql INTERFACE)
-target_include_directories(autosql INTERFACE include)
-target_compile_features(autosql INTERFACE cxx_std_20)
+add_library(autosql STATIC
+              src/autosql/parser.cpp
+              src/autosql/table.cpp
+              src/autosql/column.cpp
+              src/autosql/constraint.cpp
+)
+target_include_directories(autosql PUBLIC include)
+target_compile_features(autosql PUBLIC cxx_std_20)
+target_compile_options(autosql PRIVATE $<IF:$<CXX_COMPILER_ID:MSVC>,
+                        /W4 /WX,
+                        -Wall -Wextra -Wpedantic -Werror>)
 
 add_executable(main src/main.cpp)
 target_link_libraries(main autosql)
-target_compile_options(main PRIVATE)
+target_compile_options(main PRIVATE -Wall)
