@@ -11,9 +11,9 @@ Column::Column(Tokenizer& tokens) {
   name = tokens->str();
 
   switch ((++tokens)->type) {
-    case TokenType::VARCHAR_T: type = "VARCHAR"; break;
-    case TokenType::INTEGER_T: type = "INTEGER"; break;
-    case TokenType::TEXT_T: type = "TEXT"; break;
+    case TokenType::Varchar: type = "VARCHAR"; break;
+    case TokenType::Integer: type = "INTEGER"; break;
+    case TokenType::Text: type = "TEXT"; break;
     default: throw std::runtime_error("Error: Not a type");
   }
 
@@ -23,40 +23,40 @@ Column::Column(Tokenizer& tokens) {
 void Column::parse_constraints(Tokenizer& tokens) {
   while (!tokens.done()) {
     std::string con_name;
-    if (tokens->type == TokenType::CONSTRAINT_T) {
+    if (tokens->type == TokenType::Constraint) {
       con_name = (++tokens)->str();
       ++tokens;
     }
     switch (tokens->type) {
-      case TokenType::NOT_T:
-        if ((++tokens)->type == TokenType::NULL_T) {
+      case TokenType::Not:
+        if ((++tokens)->type == TokenType::Null) {
           not_null = true;
           ++tokens;
           continue;
         }
         throw std::runtime_error(
             "Error: Expected symbol 'NULL' following 'NOT'");
-      case TokenType::UNIQUE_T:
+      case TokenType::Unique:
         if (con_name.empty()) con_name = name + "_uq";
         unique = Unique{con_name};
         ++tokens;
         continue;
-      case TokenType::DEFAULT_T: expr = Expression{++tokens}; continue;
-      case TokenType::AS_T:
+      case TokenType::Default: expr = Expression{++tokens}; continue;
+      case TokenType::As:
         expr      = Expression{++tokens};
         generated = true;
         continue;
-      case TokenType::REFERENCES_T: {
+      case TokenType::References: {
         if (con_name.empty()) con_name = name + "_fk";
         reference = ForeignKey<Column>{con_name, ++tokens};
         continue;
       }
-      case TokenType::CHECK_T:
+      case TokenType::Check:
         if (con_name.empty()) con_name = name + "_ck";
         check = Check{con_name, ++tokens};
         continue;
-      case TokenType::CLOSE_PAR_T:
-      case TokenType::COMMA_T: return;
+      case TokenType::ClosePar:
+      case TokenType::Comma: return;
       default: throw std::runtime_error("Error: Unknown constraint type");
     }
   }

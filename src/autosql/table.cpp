@@ -8,33 +8,33 @@ Table::Table(Tokenizer& tokens) {
   name = tokens->str();
 
   ++tokens;
-  if (tokens->type != TokenType::OPEN_PAR_T)
+  if (tokens->type != TokenType::OpenPar)
     throw std::runtime_error("Error: Expected '('");
-  while (tokens->type != TokenType::CLOSE_PAR_T) {
+  while (tokens->type != TokenType::ClosePar) {
     std::string con_name;
-    if ((++tokens)->type == TokenType::CONSTRAINT_T) {
+    if ((++tokens)->type == TokenType::Constraint) {
       con_name = (++tokens)->str();
       ++tokens;
     }
     switch (tokens->type) {
-      case TokenType::IDENTIFIER_T:
+      case TokenType::Identifier:
         if (!con_name.empty())
           throw std::runtime_error("Error: Expected constraint");
         columns.try_emplace(std::string{tokens->str()}, tokens);
         break;
-      case TokenType::UNIQUE_T:
+      case TokenType::Unique:
         if (con_name.empty())
           con_name = name + "_uq" + std::to_string(unique_cons.size());
         unique_cons.emplace_back(con_name);
         ++tokens;
         break;
-      case TokenType::CHECK_T:
+      case TokenType::Check:
         if (con_name.empty())
           con_name = name + "_ck" + std::to_string(check_cons.size());
         check_cons.emplace_back(con_name, ++tokens);
         break;
-      case TokenType::FOREIGN_T:
-        if ((++tokens)->type != TokenType::KEY_T)
+      case TokenType::Foreign:
+        if ((++tokens)->type != TokenType::Key)
           throw std::runtime_error(
               "Error: Expected keyword 'KEY' in FOREIGN KEY constraint");
         if (con_name.empty())
@@ -46,18 +46,18 @@ Table::Table(Tokenizer& tokens) {
   }
   ++tokens;
 
-  if (tokens->type == TokenType::PRIMARY_T) {
-    if ((++tokens)->type == TokenType::KEY_T &&
-        (++tokens)->type == TokenType::OPEN_PAR_T) {
-      while (tokens->type != TokenType::CLOSE_PAR_T) {
-        if ((++tokens)->type != TokenType::IDENTIFIER_T)
+  if (tokens->type == TokenType::Primary) {
+    if ((++tokens)->type == TokenType::Key &&
+        (++tokens)->type == TokenType::OpenPar) {
+      while (tokens->type != TokenType::ClosePar) {
+        if ((++tokens)->type != TokenType::Identifier)
           throw std::runtime_error(
               "Error: Expected column name in PRIMARY KEY");
         primary_key.push_back(std::string{tokens->str()});
 
         switch ((++tokens)->type) {
-          case TokenType::COMMA_T:
-          case TokenType::CLOSE_PAR_T: break;
+          case TokenType::Comma:
+          case TokenType::ClosePar: break;
           default:
             throw std::runtime_error("Error: Unexpected token in primary key");
         }

@@ -20,12 +20,12 @@ public:
   Database(std::filesystem::path script) : parser_(script) {
     Tokenizer tokens = parser_.begin();
     while (!tokens.done()) {
-      if (tokens->type == TokenType::CREATE_T &&
-          (++tokens)->type == TokenType::TABLE_T) {
+      if (tokens->type == TokenType::Create &&
+          (++tokens)->type == TokenType::Table) {
         ++tokens;
         tables_.try_emplace(std::string{tokens->str()}, tokens);
       }
-      if (tokens->type != TokenType::SEMICOLON_T) {
+      if (tokens->type != TokenType::Semicolon) {
         throw std::runtime_error("Expected ';'");
       }
       ++tokens;

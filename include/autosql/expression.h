@@ -15,7 +15,7 @@ public:
   Expression() = default;
 
   Expression(Tokenizer& tokens) {
-    if (tokens->type != TokenType::OPEN_PAR_T)
+    if (tokens->type != TokenType::OpenPar)
       throw std::runtime_error(
           "Error: Expressions must be within parentheses.");
 
@@ -23,8 +23,8 @@ public:
 
     while (!tokens.done()) {
       switch ((++tokens)->type) {
-        case TokenType::OPEN_PAR_T: ++par_count; break;
-        case TokenType::CLOSE_PAR_T: --par_count; break;
+        case TokenType::OpenPar: ++par_count; break;
+        case TokenType::ClosePar: --par_count; break;
         default: break;
       }
       if (par_count == 0) break;
