@@ -30,13 +30,13 @@ std::string t1 = "CREATE TABLE test (\n"
 std::string t2 = "CREATE TABLE test ("
                   "  id INTEGER /* NOT NULL */ UNIQUE DEFAULT (5),"
                   "  id2 INTEGER UNIQUE DEFAULT (1) CHECK (info + 1 = 2 * (info + 4)),"
-                  "  id3 TEXT DEFAULT ('abc')"
+                  "  id3 STRING DEFAULT ('abc')"
                   ");"
                   "CREATE TABLE test2 ("
                   "  id INTEGER /* NOT NULL */ UNIQUE DEFAULT (5),"
                   "  id2 INTEGER UNIQUE DEFAULT (1) CHECK (info + 1 = 2 * (info + 4)),"
                   "  FOREIGN KEY (id, id2) REFERENCES test(id2, id),"
-                  "  id3 TEXT AS ('abc') REFERENCES test(id2),"
+                  "  id3 STRING AS ('abc') REFERENCES test(id2),"
                   "  CHECK (id + id2 < 10)"
                   ");";
 
@@ -45,10 +45,10 @@ int main() {
   std::filesystem::path f2 = std::filesystem::temp_directory_path().append("t2.sql");
   std::ofstream{f1} << t1 << std::flush;
   std::ofstream{f2} << t2 << std::flush;
-  asql::Database db1{f1};
-  asql::Database db2{f2};
-  asql::TableDiff diff{db1.tables_["test"], db2.tables_["test"]};
-  asql::TableDiff diff2{db1.tables_["test2"], db2.tables_["test2"]};
+  asql::parse::DatabaseParse db1{f1};
+  asql::parse::DatabaseParse db2{f2};
+  asql::parse::TableDiff diff{db1.tables_["test"], db2.tables_["test"]};
+  asql::parse::TableDiff diff2{db1.tables_["test2"], db2.tables_["test2"]};
   std::cout << diff.sql() << std::endl;
   std::cout << diff2.sql() << std::endl;
   return 0;

@@ -6,21 +6,22 @@
 #include "autosql/token.h"
 
 namespace asql {
+namespace parse {
 
-Column::Column(Tokenizer& tokens) {
+ColumnParse::ColumnParse(Tokenizer& tokens) {
   name = tokens->str();
 
   switch ((++tokens)->type) {
-    case TokenType::Varchar: type = "VARCHAR"; break;
+    case TokenType::String: type = "STRING"; break;
     case TokenType::Integer: type = "INTEGER"; break;
-    case TokenType::Text: type = "TEXT"; break;
+    case TokenType::Float: type = "FLOAT"; break;
     default: throw std::runtime_error("Error: Not a type");
   }
 
   parse_constraints(++tokens);
 }
 
-void Column::parse_constraints(Tokenizer& tokens) {
+void ColumnParse::parse_constraints(Tokenizer& tokens) {
   while (!tokens.done()) {
     std::string con_name;
     if (tokens->type == TokenType::Constraint) {
@@ -38,22 +39,22 @@ void Column::parse_constraints(Tokenizer& tokens) {
             "Error: Expected symbol 'NULL' following 'NOT'");
       case TokenType::Unique:
         if (con_name.empty()) con_name = name + "_uq";
-        unique = Unique{con_name};
+        unique = UniqueParse{con_name};
         ++tokens;
         continue;
-      case TokenType::Default: expr = Expression{++tokens}; continue;
+      case TokenType::Default: expr = ExpressionParse{++tokens}; continue;
       case TokenType::As:
-        expr      = Expression{++tokens};
+        expr      = ExpressionParse{++tokens};
         generated = true;
         continue;
       case TokenType::References: {
         if (con_name.empty()) con_name = name + "_fk";
-        reference = ForeignKey<Column>{con_name, ++tokens};
+        reference = ForeignKeyParse<ColumnParse>{con_name, ++tokens};
         continue;
       }
       case TokenType::Check:
         if (con_name.empty()) con_name = name + "_ck";
-        check = Check{con_name, ++tokens};
+        check = CheckParse{con_name, ++tokens};
         continue;
       case TokenType::ClosePar:
       case TokenType::Comma: return;
@@ -61,4 +62,5 @@ void Column::parse_constraints(Tokenizer& tokens) {
     }
   }
 }
+}  // namespace parse
 }  // namespace asql

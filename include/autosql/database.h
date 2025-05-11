@@ -10,15 +10,14 @@
 #include "autosql/token.h"
 
 namespace asql {
+namespace parse {
 
-class Database {
-  Parser parser_;
-
+class DatabaseParse {
 public:
-  std::unordered_map<std::string, Table> tables_;
+  std::unordered_map<std::string, TableParse> tables_;
 
-  Database(std::filesystem::path script) : parser_(script) {
-    Tokenizer tokens = parser_.begin();
+  DatabaseParse(std::filesystem::path script) {
+    Tokenizer tokens{script};
     while (!tokens.done()) {
       if (tokens->type == TokenType::Create &&
           (++tokens)->type == TokenType::Table) {
@@ -32,4 +31,5 @@ public:
     }
   }
 };
+}  // namespace parse
 }  // namespace asql

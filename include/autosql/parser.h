@@ -8,6 +8,7 @@
 #include "autosql/token.h"
 
 namespace asql {
+namespace parse {
 
 class Tokenizer {
   std::ifstream file_;
@@ -27,7 +28,8 @@ class Tokenizer {
   void next_token();
 
 public:
-  Tokenizer(std::filesystem::path filename) : file_{filename}, line_{0}, column_{0} {
+  Tokenizer(std::filesystem::path filename)
+    : file_{filename}, line_{0}, column_{0} {
     if (!file_.is_open()) throw std::runtime_error("Error: couldn't open file");
     file_.exceptions(std::ifstream::failbit);
     std::getline(file_, data_);
@@ -57,4 +59,5 @@ public:
 
   Tokenizer end() { return Tokenizer{""}; }
 };
+}  // namespace parse
 }  // namespace asql

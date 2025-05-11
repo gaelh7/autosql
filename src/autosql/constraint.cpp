@@ -6,9 +6,10 @@
 #include "autosql/token.h"
 
 namespace asql {
+namespace parse {
 
-ForeignKey<Column>::ForeignKey(std::string_view name, Tokenizer& tokens)
-  : Constraint{name} {
+ForeignKeyParse<ColumnParse>::ForeignKeyParse(std::string_view name, Tokenizer& tokens)
+  : ConstraintParse{name} {
   table_ = tokens->str();
   if ((++tokens)->type != TokenType::OpenPar)
     throw std::runtime_error("Error: expected '('");
@@ -18,8 +19,8 @@ ForeignKey<Column>::ForeignKey(std::string_view name, Tokenizer& tokens)
   ++tokens;
 }
 
-ForeignKey<Table>::ForeignKey(std::string_view name, Tokenizer& tokens)
-  : Constraint{name} {
+ForeignKeyParse<TableParse>::ForeignKeyParse(std::string_view name, Tokenizer& tokens)
+  : ConstraintParse{name} {
   if (tokens->type != TokenType::OpenPar)
     throw std::runtime_error("Error: expected '('");
   while (tokens->type != TokenType::ClosePar) {
@@ -48,4 +49,5 @@ ForeignKey<Table>::ForeignKey(std::string_view name, Tokenizer& tokens)
     throw std::runtime_error("Error: expected ')'");
   ++tokens;
 }
+}  // namespace parse
 }  // namespace asql

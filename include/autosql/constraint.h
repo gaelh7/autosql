@@ -8,49 +8,51 @@
 #include "autosql/expression.h"
 
 namespace asql {
+namespace parse {
 
-class Constraint {
+class ConstraintParse {
 public:
   std::string name_;
 
-  Constraint() = default;
+  ConstraintParse() = default;
 
-  Constraint(std::string_view name) : name_{name} {}
+  ConstraintParse(std::string_view name) : name_{name} {}
 };
 
-class Check : public Constraint {
+class CheckParse : public ConstraintParse {
 public:
-  Expression expr_;
+  ExpressionParse expr_;
 
-  Check(std::string_view name, Tokenizer& tokens)
-    : Constraint{name}, expr_{tokens} {}
+  CheckParse(std::string_view name, Tokenizer& tokens)
+    : ConstraintParse{name}, expr_{tokens} {}
 };
 
-class Column;
-class Table;
+class ColumnParse;
+class TableParse;
 
 template <typename T>
-class ForeignKey;
+class ForeignKeyParse;
 
 template <>
-class ForeignKey<Column> : public Constraint {
+class ForeignKeyParse<ColumnParse> : public ConstraintParse {
 public:
   std::string table_;
   std::string column_;
 
-  ForeignKey(std::string_view name, Tokenizer& tokens);
+  ForeignKeyParse(std::string_view name, Tokenizer& tokens);
 };
 
 template <>
-class ForeignKey<Table> : public Constraint {
+class ForeignKeyParse<TableParse> : public ConstraintParse {
 public:
   std::string table_;
   std::vector<std::pair<std::string, std::string>> columns_;
 
-  ForeignKey(std::string_view name, Tokenizer& tokens);
+  ForeignKeyParse(std::string_view name, Tokenizer& tokens);
 };
 
-class Unique : public Constraint {
-  using Constraint::Constraint;
+class UniqueParse : public ConstraintParse {
+  using ConstraintParse::ConstraintParse;
 };
+}  // namespace parse
 }  // namespace asql

@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 namespace asql {
+namespace parse {
 
 enum class TokenType {
   Unspecified,
@@ -17,9 +18,10 @@ enum class TokenType {
   StringLiteral,
   FloatLiteral,
   IntLiteral,
-  Varchar,
+  String,
   Integer,
-  Text,
+  Float,
+  Double,
   Create,
   Table,
   Type,
@@ -39,25 +41,26 @@ enum class TokenType {
 };
 
 inline const std::unordered_map<std::string_view, TokenType> keyword_map = {
-    {"INTEGER",    TokenType::Integer   },
-    {"VARCHAR",    TokenType::Varchar   },
-    {"TEXT",       TokenType::Text      },
-    {"CREATE",     TokenType::Create    },
-    {"TABLE",      TokenType::Table     },
-    {"TYPE",       TokenType::Type      },
-    {"GRANT",      TokenType::Grant     },
-    {"CONSTRAINT", TokenType::Constraint},
+    {"AS",         TokenType::As        },
     {"CHECK",      TokenType::Check     },
-    {"REFERENCES", TokenType::References},
+    {"CONSTRAINT", TokenType::Constraint},
+    {"CREATE",     TokenType::Create    },
     {"DEFAULT",    TokenType::Default   },
-    {"UNIQUE",     TokenType::Unique    },
+    {"DOUBLE",     TokenType::Double    },
+    {"FOREIGN",    TokenType::Foreign   },
+    {"FLOAT",      TokenType::Float     },
+    {"GRANT",      TokenType::Grant     },
+    {"INTEGER",    TokenType::Integer   },
+    {"KEY",        TokenType::Key       },
     {"NOT",        TokenType::Not       },
     {"NULL",       TokenType::Null      },
-    {"AS",         TokenType::As        },
-    {"STORED",     TokenType::Stored    },
     {"PRIMARY",    TokenType::Primary   },
-    {"FOREIGN",    TokenType::Foreign   },
-    {"KEY",        TokenType::Key       },
+    {"REFERENCES", TokenType::References},
+    {"STORED",     TokenType::Stored    },
+    {"STRING",     TokenType::String    },
+    {"TABLE",      TokenType::Table     },
+    {"TYPE",       TokenType::Type      },
+    {"UNIQUE",     TokenType::Unique    },
 };
 
 class Token {
@@ -82,9 +85,10 @@ public:
       case TokenType::ClosePar: return ")";
       case TokenType::Semicolon: return ";";
       case TokenType::Comma: return ",";
-      case TokenType::Varchar: return "VARCHAR";
+      case TokenType::String: return "STRING";
       case TokenType::Integer: return "INTEGER";
-      case TokenType::Text: return "TEXT";
+      case TokenType::Float: return "FLOAT";
+      case TokenType::Double: return "DOUBLE";
       case TokenType::Create: return "CREATE";
       case TokenType::Table: return "TABLE";
       case TokenType::Type: return "TYPE";
@@ -102,7 +106,8 @@ public:
       case TokenType::Foreign: return "FOREIGN";
       case TokenType::Key: return "KEY";
     }
-    return ""; // Unreachable
+    return "";  // Unreachable
   }
 };
+}  // namespace parse
 }  // namespace asql

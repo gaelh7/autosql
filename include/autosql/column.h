@@ -8,22 +8,24 @@
 #include "autosql/parser.h"
 
 namespace asql {
+namespace parse {
 
-class Column {
+class ColumnParse {
   void parse_constraints(Tokenizer& tokens);
 
 public:
   std::string name;
   std::string type;
-  Expression expr;
-  std::optional<Check> check;
-  std::optional<ForeignKey<Column>> reference;
-  std::optional<Unique> unique;
+  ExpressionParse expr;
+  std::optional<CheckParse> check;
+  std::optional<ForeignKeyParse<ColumnParse>> reference;
+  std::optional<UniqueParse> unique;
   bool not_null  = false;
   bool generated = false;
 
-  Column() = default;
+  ColumnParse() = default;
 
-  Column(Tokenizer& tokens);
+  ColumnParse(Tokenizer& tokens);
 };
+}  // namespace parse
 }  // namespace asql

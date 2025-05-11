@@ -7,14 +7,15 @@
 #include "autosql/token.h"
 
 namespace asql {
+namespace parse {
 
-class Expression {
+class ExpressionParse {
 public:
   std::string raw_;
 
-  Expression() = default;
+  ExpressionParse() = default;
 
-  Expression(Tokenizer& tokens) {
+  ExpressionParse(Tokenizer& tokens) {
     if (tokens->type != TokenType::OpenPar)
       throw std::runtime_error(
           "Error: Expressions must be within parentheses.");
@@ -34,4 +35,5 @@ public:
     ++tokens;
   }
 };
+}  // namespace parse
 }  // namespace asql

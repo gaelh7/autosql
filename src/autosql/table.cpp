@@ -4,7 +4,9 @@
 #include "autosql/token.h"
 
 namespace asql {
-Table::Table(Tokenizer& tokens) {
+namespace parse {
+
+TableParse::TableParse(Tokenizer& tokens) {
   name = tokens->str();
 
   ++tokens;
@@ -67,7 +69,8 @@ Table::Table(Tokenizer& tokens) {
   }
 }
 
-TableDiff::TableDiff(const Table& lhs, const Table& rhs) : name{rhs.name} {
+TableDiff::TableDiff(const TableParse& lhs, const TableParse& rhs)
+  : name{rhs.name} {
   if (lhs.name != rhs.name)
     throw std::invalid_argument("Rename operations not supported");
 
@@ -87,7 +90,7 @@ TableDiff::TableDiff(const Table& lhs, const Table& rhs) : name{rhs.name} {
 
 std::string TableDiff::sql() {
   std::string result;
-  for (Column& col : add) {
+  for (ColumnParse& col : add) {
     result += "ALTER TABLE ";
     result += name;
     result += " ADD COLUMN ";
@@ -285,4 +288,5 @@ std::string TableDiff::sql() {
   }
   return result;
 }
+}  // namespace parse
 }  // namespace asql

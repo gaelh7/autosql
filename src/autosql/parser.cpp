@@ -7,6 +7,7 @@
 #include "autosql/token.h"
 
 namespace asql {
+namespace parse {
 
 void Tokenizer::skip_comments() {
   column_ = data_.find_first_not_of(" \t\v\r\f", column_);
@@ -125,4 +126,5 @@ void Tokenizer::next_token() {
   skip_comments();
 }
 
+}  // namespace parse
 }  // namespace asql
