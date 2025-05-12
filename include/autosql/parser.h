@@ -17,7 +17,7 @@ class Tokenizer {
   size_t column_;
   Token curr_;
 
-  void skip_comments();
+  void skip_whitespace();
 
   void parse_string();
 
@@ -25,7 +25,7 @@ class Tokenizer {
 
   void parse_float() noexcept;
 
-  void next_token();
+  void read_token();
 
 public:
   Tokenizer(std::filesystem::path filename)
@@ -33,20 +33,16 @@ public:
     if (!file_.is_open()) throw std::runtime_error("Error: couldn't open file");
     file_.exceptions(std::ifstream::failbit);
     std::getline(file_, data_);
-    skip_comments();
-    next_token();
+    read_token();
   }
 
   const Token& operator*() const noexcept { return curr_; }
 
   const Token* operator->() const noexcept { return &curr_; }
 
-  Tokenizer& operator++() {
-    next_token();
-    return *this;
-  }
+  Tokenizer& operator++();
 
-  bool done() const { return data_.empty(); }
+  bool done() const { return curr_.type == TokenType::Eof; }
 };
 
 class Parser {

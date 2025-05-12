@@ -3,20 +3,51 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 
 #include "autosql/token.h"
 
 namespace asql {
 namespace parse {
 
-void Tokenizer::skip_comments() {
+static const std::unordered_map<std::string_view, TokenType> keyword_map = {
+    {"AS",         TokenType::As        },
+    {"CHECK",      TokenType::Check     },
+    {"CONSTRAINT", TokenType::Constraint},
+    {"CREATE",     TokenType::Create    },
+    {"DEFAULT",    TokenType::Default   },
+    {"DOUBLE",     TokenType::Double    },
+    {"FOREIGN",    TokenType::Foreign   },
+    {"FLOAT",      TokenType::Float     },
+    {"GRANT",      TokenType::Grant     },
+    {"INT32",      TokenType::Int32     },
+    {"INT64",      TokenType::Int64     },
+    {"KEY",        TokenType::Key       },
+    {"NOT",        TokenType::Not       },
+    {"NULL",       TokenType::Null      },
+    {"PRIMARY",    TokenType::Primary   },
+    {"REFERENCES", TokenType::References},
+    {"STORED",     TokenType::Stored    },
+    {"STRING",     TokenType::String    },
+    {"TABLE",      TokenType::Table     },
+    {"TYPE",       TokenType::Type      },
+    {"UNIQUE",     TokenType::Unique    },
+};
+
+Tokenizer& Tokenizer::operator++() {
+  if (curr_.type == TokenType::Eof)
+    throw std::runtime_error("Error: Unexpected end-of-file");
+  read_token();
+  return *this;
+}
+
+void Tokenizer::skip_whitespace() {
   column_ = data_.find_first_not_of(" \t\v\r\f", column_);
   while (true) {
     if (column_ == std::string::npos ||
         std::string_view{data_}.substr(column_, 2) == "--") {
       if (file_.eof()) {
-        data_   = "";
-        column_ = 0;
+        curr_ = Token{"", TokenType::Eof};
         break;
       } else {
         std::getline(file_, data_);
@@ -81,8 +112,9 @@ void Tokenizer::parse_float() noexcept {
   column_ = end;
 }
 
-void Tokenizer::next_token() {
-  if (data_.empty()) return;
+void Tokenizer::read_token() {
+  skip_whitespace();
+  if (curr_.type == TokenType::Eof) return;
   switch (data_[column_]) {
     case '"':
     case '\'': parse_string(); break;
@@ -131,7 +163,6 @@ void Tokenizer::next_token() {
       column_ = end_pos;
     }
   }
-  skip_comments();
 }
 
 }  // namespace parse

@@ -1,8 +1,6 @@
 #pragma once
 
-#include <cassert>
-#include <string>
-#include <unordered_map>
+#include <string_view>
 
 namespace asql {
 namespace parse {
@@ -43,32 +41,8 @@ enum class TokenType {
   Key,
 };
 
-inline const std::unordered_map<std::string_view, TokenType> keyword_map = {
-    {"AS",         TokenType::As        },
-    {"CHECK",      TokenType::Check     },
-    {"CONSTRAINT", TokenType::Constraint},
-    {"CREATE",     TokenType::Create    },
-    {"DEFAULT",    TokenType::Default   },
-    {"DOUBLE",     TokenType::Double    },
-    {"FOREIGN",    TokenType::Foreign   },
-    {"FLOAT",      TokenType::Float     },
-    {"GRANT",      TokenType::Grant     },
-    {"INT32",      TokenType::Int32     },
-    {"INT64",      TokenType::Int64     },
-    {"KEY",        TokenType::Key       },
-    {"NOT",        TokenType::Not       },
-    {"NULL",       TokenType::Null      },
-    {"PRIMARY",    TokenType::Primary   },
-    {"REFERENCES", TokenType::References},
-    {"STORED",     TokenType::Stored    },
-    {"STRING",     TokenType::String    },
-    {"TABLE",      TokenType::Table     },
-    {"TYPE",       TokenType::Type      },
-    {"UNIQUE",     TokenType::Unique    },
-};
-
 class Token {
-  std::string data_;
+  std::string_view data_;
 
 public:
   TokenType type;
