@@ -9,6 +9,7 @@ add_library(autosql STATIC
               src/autosql/table.cpp
               src/autosql/column.cpp
               src/autosql/constraint.cpp
+              src/autosql/datatype.cpp
 )
 target_include_directories(autosql PUBLIC include)
 target_compile_features(autosql PUBLIC cxx_std_20)

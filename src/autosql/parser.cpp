@@ -105,6 +105,14 @@ void Tokenizer::next_token() {
       curr_ = Token{"", TokenType::ClosePar};
       ++column_;
       break;
+    case '[':
+      curr_ = Token{"", TokenType::OpenBracket};
+      ++column_;
+      break;
+    case ']':
+      curr_ = Token{"", TokenType::CloseBracket};
+      ++column_;
+      break;
     case ',':
       curr_ = Token{"", TokenType::Comma};
       ++column_;
@@ -114,7 +122,7 @@ void Tokenizer::next_token() {
       ++column_;
       break;
     default: {
-      size_t end_pos = data_.find_first_of(" \t\v\r\f'\".(),;", column_);
+      size_t end_pos = data_.find_first_of(" \t\v\r\f'\".()[],;", column_);
       std::string_view raw =
           std::string_view{data_}.substr(column_, end_pos - column_);
       auto it = keyword_map.find(raw);

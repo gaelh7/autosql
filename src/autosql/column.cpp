@@ -3,6 +3,7 @@
 
 #include <stdexcept>
 
+#include "autosql/datatype.h"
 #include "autosql/token.h"
 
 namespace asql {
@@ -10,15 +11,9 @@ namespace parse {
 
 ColumnParse::ColumnParse(Tokenizer& tokens) {
   name = tokens->str();
+  type = DatetypeParse{++tokens};
 
-  switch ((++tokens)->type) {
-    case TokenType::String: type = "STRING"; break;
-    case TokenType::Integer: type = "INTEGER"; break;
-    case TokenType::Float: type = "FLOAT"; break;
-    default: throw std::runtime_error("Error: Not a type");
-  }
-
-  parse_constraints(++tokens);
+  parse_constraints(tokens);
 }
 
 void ColumnParse::parse_constraints(Tokenizer& tokens) {

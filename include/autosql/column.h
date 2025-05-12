@@ -4,6 +4,7 @@
 #include <string>
 
 #include "autosql/constraint.h"
+#include "autosql/datatype.h"
 #include "autosql/expression.h"
 #include "autosql/parser.h"
 
@@ -15,7 +16,7 @@ class ColumnParse {
 
 public:
   std::string name;
-  std::string type;
+  DatetypeParse type;
   ExpressionParse expr;
   std::optional<CheckParse> check;
   std::optional<ForeignKeyParse<ColumnParse>> reference;

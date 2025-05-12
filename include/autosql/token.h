@@ -13,13 +13,16 @@ enum class TokenType {
   Identifier,
   OpenPar,
   ClosePar,
+  OpenBracket,
+  CloseBracket,
   Semicolon,
   Comma,
   StringLiteral,
   FloatLiteral,
   IntLiteral,
   String,
-  Integer,
+  Int32,
+  Int64,
   Float,
   Double,
   Create,
@@ -50,7 +53,8 @@ inline const std::unordered_map<std::string_view, TokenType> keyword_map = {
     {"FOREIGN",    TokenType::Foreign   },
     {"FLOAT",      TokenType::Float     },
     {"GRANT",      TokenType::Grant     },
-    {"INTEGER",    TokenType::Integer   },
+    {"INT32",      TokenType::Int32     },
+    {"INT64",      TokenType::Int64     },
     {"KEY",        TokenType::Key       },
     {"NOT",        TokenType::Not       },
     {"NULL",       TokenType::Null      },
@@ -83,10 +87,13 @@ public:
       case TokenType::Eof: return "";
       case TokenType::OpenPar: return "(";
       case TokenType::ClosePar: return ")";
+      case TokenType::OpenBracket: return "[";
+      case TokenType::CloseBracket: return "]";
       case TokenType::Semicolon: return ";";
       case TokenType::Comma: return ",";
       case TokenType::String: return "STRING";
-      case TokenType::Integer: return "INTEGER";
+      case TokenType::Int32: return "INT32";
+      case TokenType::Int64: return "INT64";
       case TokenType::Float: return "FLOAT";
       case TokenType::Double: return "DOUBLE";
       case TokenType::Create: return "CREATE";

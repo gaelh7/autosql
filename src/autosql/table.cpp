@@ -96,7 +96,7 @@ std::string TableDiff::sql() {
     result += " ADD COLUMN ";
     result += col.name;
     result += " ";
-    result += col.type;
+    result += col.type.str();
     if (col.not_null) result += " NOT NULL";
     if (!col.expr.raw_.empty()) {
       if (col.generated) result += " GENERATED ALWAYS AS (";
@@ -128,13 +128,13 @@ std::string TableDiff::sql() {
     result += ';';
   }
   for (auto& [lhs, rhs] : alter) {
-    if (lhs.type != rhs.type) {
+    if (lhs.type.str() != rhs.type.str()) {
       result += "ALTER TABLE ";
       result += name;
       result += " ALTER COLUMN ";
       result += rhs.name;
       result += " TYPE ";
-      result += rhs.type;
+      result += rhs.type.str();
       result += ';';
     }
     if (lhs.not_null) {
