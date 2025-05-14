@@ -5,9 +5,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "autosql/column.h"
-#include "autosql/constraint.h"
-#include "autosql/parser.h"
+#include "autosql/parse/column.h"
+#include "autosql/parse/constraint.h"
+#include "autosql/parse/parser.h"
 
 namespace asql {
 namespace parse {

@@ -1,10 +1,10 @@
 
-#include "autosql/column.h"
+#include "autosql/parse/column.h"
 
 #include <stdexcept>
 
-#include "autosql/datatype.h"
-#include "autosql/token.h"
+#include "autosql/parse/datatype.h"
+#include "autosql/parse/token.h"
 
 namespace asql {
 namespace parse {

@@ -5,16 +5,16 @@
 #include <fstream>
 #include <string>
 
-#include "autosql/token.h"
+#include "autosql/parse/token.h"
 
 namespace asql {
 namespace parse {
 
 class Tokenizer {
   std::ifstream file_;
-  std::string data_;
   size_t line_;
   size_t column_;
+  std::string data_;
   Token curr_;
 
   void skip_whitespace();
@@ -29,7 +29,7 @@ class Tokenizer {
 
 public:
   Tokenizer(std::filesystem::path filename)
-    : file_{filename}, line_{0}, column_{0} {
+    : file_{filename}, line_{}, column_{} {
     if (!file_.is_open()) throw std::runtime_error("Error: couldn't open file");
     file_.exceptions(std::ifstream::failbit);
     std::getline(file_, data_);

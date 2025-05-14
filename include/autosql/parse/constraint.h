@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-#include "autosql/expression.h"
+#include "autosql/parse/expression.h"
 
 namespace asql {
 namespace parse {

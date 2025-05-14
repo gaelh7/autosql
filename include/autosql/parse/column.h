@@ -3,10 +3,10 @@
 #include <optional>
 #include <string>
 
-#include "autosql/constraint.h"
-#include "autosql/datatype.h"
-#include "autosql/expression.h"
-#include "autosql/parser.h"
+#include "autosql/parse/constraint.h"
+#include "autosql/parse/datatype.h"
+#include "autosql/parse/expression.h"
+#include "autosql/parse/parser.h"
 
 namespace asql {
 namespace parse {

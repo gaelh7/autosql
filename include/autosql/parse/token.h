@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <string_view>
 
 namespace asql {
@@ -42,7 +43,7 @@ enum class TokenType {
 };
 
 class Token {
-  std::string_view data_;
+  std::string data_;
 
 public:
   TokenType type;

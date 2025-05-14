@@ -4,8 +4,8 @@
 #include <ostream>
 #include <string>
 
-#include "autosql/database.h"
-#include "autosql/table.h"
+#include "autosql/parse/database.h"
+#include "autosql/parse/table.h"
 
 std::string sql = "\t \nCREATE \t\n TABLE\t\r \nT1 ("
                   "  id INT32 NOT NULL DEFAULT (0), -- This is a comment\n"

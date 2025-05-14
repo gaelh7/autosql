@@ -1,11 +1,11 @@
-#include "autosql/parser.h"
+#include "autosql/parse/parser.h"
 
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <unordered_map>
 
-#include "autosql/token.h"
+#include "autosql/parse/token.h"
 
 namespace asql {
 namespace parse {

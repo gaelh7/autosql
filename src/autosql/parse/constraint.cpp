@@ -1,9 +1,9 @@
-#include "autosql/constraint.h"
+#include "autosql/parse/constraint.h"
 
 #include <span>
 #include <stdexcept>
 
-#include "autosql/token.h"
+#include "autosql/parse/token.h"
 
 namespace asql {
 namespace parse {

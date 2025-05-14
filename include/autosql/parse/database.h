@@ -5,9 +5,9 @@
 #include <string>
 #include <unordered_map>
 
-#include "autosql/parser.h"
-#include "autosql/table.h"
-#include "autosql/token.h"
+#include "autosql/parse/parser.h"
+#include "autosql/parse/table.h"
+#include "autosql/parse/token.h"
 
 namespace asql {
 namespace parse {

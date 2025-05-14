@@ -3,8 +3,8 @@
 #include <stdexcept>
 #include <string>
 
-#include "autosql/parser.h"
-#include "autosql/token.h"
+#include "autosql/parse/parser.h"
+#include "autosql/parse/token.h"
 
 namespace asql {
 namespace parse {

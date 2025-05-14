@@ -3,7 +3,7 @@
 #include <string>
 #include <string_view>
 
-#include "autosql/parser.h"
+#include "autosql/parse/parser.h"
 
 namespace asql {
 namespace parse {
