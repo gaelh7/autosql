@@ -9,7 +9,7 @@ class Database {
   std::unordered_map<std::string, Table> tables;
 
 public:
-  Database(const parse::DatabaseParse& table);
+  Database(const parse::DatabaseParse& database);
 };
 
 }  // namespace asql
