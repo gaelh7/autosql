@@ -11,7 +11,7 @@ namespace parse {
 
 ColumnParse::ColumnParse(Tokenizer& tokens) {
   name = tokens->str();
-  type = DatetypeParse{++tokens};
+  type = DatatypeParse{++tokens};
 
   parse_constraints(tokens);
 }

@@ -26,16 +26,16 @@ enum class RawType {
   Json,
 };
 
-class DatetypeParse {
+class DatatypeParse {
   std::string name_;
 
 public:
   RawType id_;
   bool is_array;
 
-  DatetypeParse() = default;
+  DatatypeParse() = default;
 
-  DatetypeParse(Tokenizer& tokens);
+  DatatypeParse(Tokenizer& tokens);
 
   std::string_view str() const noexcept;
 };

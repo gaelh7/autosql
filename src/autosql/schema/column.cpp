@@ -5,9 +5,9 @@
 namespace asql {
 
 Column::Column(const parse::ColumnParse& col)
-  : name_{col.name}, type_{col.type.str()} {}
+  : name_{col.name}, type_{col.type} {}
 
-void Column::set_constraints(const Database& _,
+void Column::set_constraints(const Database&,
                              const parse::ColumnParse& column) {
   expr_      = column.expr;
   check_     = column.check;

@@ -9,7 +9,7 @@
 namespace asql {
 namespace parse {
 
-DatetypeParse::DatetypeParse(Tokenizer& tokens) : is_array{false} {
+DatatypeParse::DatatypeParse(Tokenizer& tokens) : is_array{false} {
   switch (tokens->type) {
     case TokenType::Identifier:
       id_   = RawType::User;
@@ -30,7 +30,7 @@ DatetypeParse::DatetypeParse(Tokenizer& tokens) : is_array{false} {
   }
 }
 
-std::string_view DatetypeParse::str() const noexcept {
+std::string_view DatatypeParse::str() const noexcept {
   switch (id_) {
     case RawType::User: return name_;
     case RawType::Bool: return "BOOL";

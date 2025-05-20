@@ -98,10 +98,10 @@ std::string TableDiff::sql() {
     result += " ";
     result += col.type.str();
     if (col.not_null) result += " NOT NULL";
-    if (!col.expr.raw_.empty()) {
+    if (col.expr) {
       if (col.generated) result += " GENERATED ALWAYS AS (";
       else result += " DEFAULT (";
-      result += col.expr.raw_;
+      result += col.expr->raw_;
       result += ")";
     }
     if (col.check) {
@@ -152,36 +152,36 @@ std::string TableDiff::sql() {
       result += rhs.name;
       result += " SET NOT NULL;";
     }
-    if (!rhs.expr.raw_.empty() && !rhs.generated) {
-      if (lhs.expr.raw_.empty() || lhs.generated ||
-          lhs.expr.raw_ != rhs.expr.raw_) {
+    if (rhs.expr && !rhs.generated) {
+      if (!lhs.expr || lhs.generated ||
+          lhs.expr->raw_ != rhs.expr->raw_) {
         result += "ALTER TABLE ";
         result += name;
         result += " ALTER COLUMN ";
         result += rhs.name;
         result += " SET DEFAULT (";
-        result += rhs.expr.raw_;
+        result += rhs.expr->raw_;
         result += ");";
       }
-    } else if (!lhs.expr.raw_.empty() && !lhs.generated) {
+    } else if (lhs.expr && !lhs.generated) {
       result += "ALTER TABLE ";
       result += name;
       result += " ALTER COLUMN ";
       result += rhs.name;
       result += " DROP DEFAULT;";
     }
-    if (!rhs.expr.raw_.empty() && rhs.generated) {
-      if (lhs.expr.raw_.empty() || !lhs.generated ||
-          lhs.expr.raw_ != rhs.expr.raw_) {
+    if (rhs.expr && rhs.generated) {
+      if (!lhs.expr || !lhs.generated ||
+          lhs.expr->raw_ != rhs.expr->raw_) {
         result += "ALTER TABLE ";
         result += name;
         result += " ALTER COLUMN ";
         result += rhs.name;
         result += " SET EXPRESSION (";
-        result += rhs.expr.raw_;
+        result += rhs.expr->raw_;
         result += ");";
       }
-    } else if (!lhs.expr.raw_.empty() && lhs.generated) {
+    } else if (lhs.expr && lhs.generated) {
       result += "ALTER TABLE ";
       result += name;
       result += " ALTER COLUMN ";

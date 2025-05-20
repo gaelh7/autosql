@@ -16,8 +16,8 @@ class ColumnParse {
 
 public:
   std::string name;
-  DatetypeParse type;
-  ExpressionParse expr;
+  DatatypeParse type;
+  std::optional<ExpressionParse> expr;
   std::optional<CheckParse> check;
   std::optional<ForeignKeyParse<ColumnParse>> reference;
   std::optional<UniqueParse> unique;
