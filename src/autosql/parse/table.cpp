@@ -101,14 +101,14 @@ std::string TableDiff::sql() {
     if (col.expr) {
       if (col.generated) result += " GENERATED ALWAYS AS (";
       else result += " DEFAULT (";
-      result += col.expr->raw_;
+      result += col.expr->str();
       result += ")";
     }
     if (col.check) {
       result += " CONSTRAINT ";
       result += col.check->name_;
       result += " CHECK (";
-      result += col.check->expr_.raw_;
+      result += col.check->expr_.str();
       result += ')';
     }
     if (col.reference) {
@@ -154,13 +154,13 @@ std::string TableDiff::sql() {
     }
     if (rhs.expr && !rhs.generated) {
       if (!lhs.expr || lhs.generated ||
-          lhs.expr->raw_ != rhs.expr->raw_) {
+          lhs.expr->str() != rhs.expr->str()) {
         result += "ALTER TABLE ";
         result += name;
         result += " ALTER COLUMN ";
         result += rhs.name;
         result += " SET DEFAULT (";
-        result += rhs.expr->raw_;
+        result += rhs.expr->str();
         result += ");";
       }
     } else if (lhs.expr && !lhs.generated) {
@@ -172,13 +172,13 @@ std::string TableDiff::sql() {
     }
     if (rhs.expr && rhs.generated) {
       if (!lhs.expr || !lhs.generated ||
-          lhs.expr->raw_ != rhs.expr->raw_) {
+          lhs.expr->str() != rhs.expr->str()) {
         result += "ALTER TABLE ";
         result += name;
         result += " ALTER COLUMN ";
         result += rhs.name;
         result += " SET EXPRESSION (";
-        result += rhs.expr->raw_;
+        result += rhs.expr->str();
         result += ");";
       }
     } else if (lhs.expr && lhs.generated) {
@@ -190,7 +190,7 @@ std::string TableDiff::sql() {
     }
 
     if (lhs.check && rhs.check &&
-        lhs.check->expr_.raw_ == rhs.check->expr_.raw_) {
+        lhs.check->expr_.str() == rhs.check->expr_.str()) {
       if (lhs.check->name_ == rhs.check->name_) {
         result += "ALTER TABLE ";
         result += name;
@@ -214,7 +214,7 @@ std::string TableDiff::sql() {
         result += " ADD ";
         result += rhs.check->name_;
         result += " CHECK (";
-        result += rhs.check->expr_.raw_;
+        result += rhs.check->expr_.str();
         result += ");";
       }
     }

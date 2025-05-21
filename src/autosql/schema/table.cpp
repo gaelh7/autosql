@@ -14,4 +14,10 @@ void Table::set_constraints(const Database& database,
     col.set_constraints(database, table.columns.at(name));
   }
 }
+
+const Column* Table::column(std::string_view name) const {
+  auto it = columns_.find(std::string{name});
+  if (it == columns_.end()) return nullptr;
+  return &it->second;
+}
 }  // namespace asql

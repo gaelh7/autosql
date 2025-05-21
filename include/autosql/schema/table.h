@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include <unordered_map>
 
@@ -14,6 +16,8 @@ public:
   Table(const parse::TableParse& table);
 
   void set_constraints(const Database& database, const parse::TableParse& table);
+
+  const Column* column(std::string_view name) const;
 };
 
 }  // namespace asql

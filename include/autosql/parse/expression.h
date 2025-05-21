@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include "autosql/parse/parser.h"
 #include "autosql/parse/token.h"
@@ -10,9 +11,8 @@ namespace asql {
 namespace parse {
 
 class ExpressionParse {
+  std::vector<Token> tokens_;
 public:
-  std::string raw_;
-
   ExpressionParse() = default;
 
   ExpressionParse(Tokenizer& tokens) {
@@ -29,10 +29,19 @@ public:
         default: break;
       }
       if (par_count == 0) break;
-      raw_ += tokens->str();
-      raw_ += ' ';
+
+      tokens_.push_back(*tokens);
     }
     ++tokens;
+  }
+
+  std::string str() const noexcept {
+    std::string out;
+    for (const Token& token: tokens_) {
+      out += token.str();
+      out += ' ';
+    }
+    return out;
   }
 };
 }  // namespace parse

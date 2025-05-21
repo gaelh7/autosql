@@ -1,0 +1,25 @@
+#include "autosql/schema/constraint.h"
+
+#include <stdexcept>
+
+#include "autosql/parse/constraint.h"
+#include "autosql/schema/database.h"
+
+namespace asql {
+
+ForeignKey<Column>::ForeignKey(
+    const Database& database,
+    const parse::ForeignKeyParse<parse::ColumnParse>& fk)
+  : Constraint{fk.name_} {
+  table_ = database.table(fk.table_);
+  if (!table_)
+    throw std::runtime_error("Error: Undefined reference to table: " +
+                             fk.table_);
+
+  column_ = table_->column(fk.column_);
+  if (!column_)
+    throw std::runtime_error("Error: Column '" + fk.column_ +
+                             "' not found in table '" + fk.table_ + "'");
+}
+
+}  // namespace asql
