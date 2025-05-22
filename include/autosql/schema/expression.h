@@ -6,7 +6,7 @@ namespace asql {
 
 class Expression {
 public:
-  Expression(const parse::ExpressionParse expr);
+  Expression(const parse::ExpressionParse&) {}
 };
 
 }  // namespace asql

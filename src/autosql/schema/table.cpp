@@ -5,7 +5,7 @@
 namespace asql {
 
 Table::Table(const parse::TableParse& table) {
-  for (const auto& [name, col] : table.columns) { columns_.emplace(name, col); }
+  for (const auto& [name, col] : table.columns) { columns_.try_emplace(name, col); }
 }
 
 void Table::set_constraints(const Database& database,

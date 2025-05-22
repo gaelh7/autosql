@@ -17,6 +17,8 @@ class Column {
   bool not_null_ = false;
 
 public:
+  Column() = default;
+
   Column(const parse::ColumnParse& col);
 };
 

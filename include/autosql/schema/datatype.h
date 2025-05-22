@@ -31,6 +31,8 @@ class Datatype {
   bool is_array;
 
 public:
+  Datatype() = default;
+
   Datatype(const parse::DatatypeParse& type);
 };
 

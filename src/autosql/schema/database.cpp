@@ -8,7 +8,7 @@ Database::Database(const parse::DatabaseParse& database) {
   }
 
   for (auto& [name, table] : tables_) {
-    table.set_constraints(database, database.tables_.at(name));
+    table.set_constraints(*this, database.tables_.at(name));
   }
 }
 

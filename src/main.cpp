@@ -6,6 +6,7 @@
 
 #include "autosql/parse/database.h"
 #include "autosql/parse/table.h"
+#include "autosql/schema/database.h"
 
 std::string sql = "\t \nCREATE \t\n TABLE\t\r \nT1 ("
                   "  id INT32 NOT NULL DEFAULT (0), -- This is a comment\n"
@@ -51,5 +52,7 @@ int main() {
   asql::parse::TableDiff diff2{db1.tables_["test2"], db2.tables_["test2"]};
   std::cout << diff.sql() << std::endl;
   std::cout << diff2.sql() << std::endl;
+  asql::Database database1{db1};
+  asql::Database database2{db2};
   return 0;
 }
