@@ -5,12 +5,17 @@
 
 #include "autosql/parse/table.h"
 #include "autosql/schema/column.h"
+#include "autosql/schema/constraint.h"
 
 namespace asql {
 
 class Table {
   std::string name_;
   std::unordered_map<std::string, Column> columns_;
+  std::vector<Unique> unique_cons;
+  std::vector<Check> check_cons;
+  std::vector<ForeignKey<Table>> ref_cons;
+  std::vector<std::string> primary_key;
 
 public:
   Table(const parse::TableParse& table);
