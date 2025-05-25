@@ -30,7 +30,7 @@ std::string t1 = "CREATE TABLE test (\n"
                   ");";
 std::string t2 = "CREATE TABLE test ("
                   "  id INT32 /* NOT NULL */ UNIQUE DEFAULT (5),"
-                  "  id2 INT32 UNIQUE DEFAULT (1) CHECK (MAX(2, info) + - 1),"
+                  "  id2 INT32 UNIQUE DEFAULT (1) CHECK (5 = MAX(2 + x^2, info, 3) + - 1),"
                   "  id3 STRING DEFAULT ('abc')"
                   ");"
                   "CREATE TABLE test2 ("

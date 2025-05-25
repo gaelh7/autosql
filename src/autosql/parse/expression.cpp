@@ -21,6 +21,7 @@ std::string ExpressionParse::str() const noexcept {
 }
 
 void ExpressionParse::parse_func(Tokenizer& tokens) {
+  tokens_.emplace_back("", TokenType::Semicolon);
   if ((++tokens)->type == TokenType::ClosePar) return;
   while (true) {
     pratt(tokens, 0);
