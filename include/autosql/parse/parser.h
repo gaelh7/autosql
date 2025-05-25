@@ -17,7 +17,7 @@ class Tokenizer {
   std::string data_;
   Token curr_;
 
-  void skip_whitespace();
+  bool seek_next();
 
   void parse_string();
 

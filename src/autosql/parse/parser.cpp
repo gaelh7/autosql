@@ -41,19 +41,15 @@ Tokenizer& Tokenizer::operator++() {
   return *this;
 }
 
-void Tokenizer::skip_whitespace() {
+bool Tokenizer::seek_next() {
   column_ = data_.find_first_not_of(" \t\v\r\f", column_);
   while (true) {
     if (column_ == std::string::npos ||
         std::string_view{data_}.substr(column_, 2) == "--") {
-      if (file_.eof()) {
-        curr_ = Token{"", TokenType::Eof};
-        break;
-      } else {
-        std::getline(file_, data_);
-        ++line_;
-        column_ = data_.find_first_not_of(" \t\v\r\f");
-      }
+      if (file_.eof()) return false;
+      std::getline(file_, data_);
+      ++line_;
+      column_ = data_.find_first_not_of(" \t\v\r\f");
     } else if (std::string_view{data_}.substr(column_, 2) == "/*") {
       for (column_ = data_.find("*/", column_); column_ == std::string::npos;
            column_ = data_.find("*/")) {
@@ -63,7 +59,7 @@ void Tokenizer::skip_whitespace() {
         ++line_;
       }
       column_ = data_.find_first_not_of(" \t\v\r\f", column_ + 2);
-    } else break;
+    } else return true;
   }
 }
 
@@ -113,8 +109,10 @@ void Tokenizer::parse_float() noexcept {
 }
 
 void Tokenizer::read_token() {
-  skip_whitespace();
-  if (curr_.type == TokenType::Eof) return;
+  if (!seek_next()) {
+    curr_ = Token{"", TokenType::Eof};
+    return;
+  }
   switch (data_[column_]) {
     case '"':
     case '\'': parse_string(); break;

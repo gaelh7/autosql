@@ -1,5 +1,6 @@
 #include "autosql/parse/expression.h"
 
+#include <stdexcept>
 #include <string>
 
 #include "autosql/parse/parser.h"
@@ -8,9 +9,7 @@
 namespace asql {
 namespace parse {
 
-ExpressionParse::ExpressionParse(Tokenizer& tokens) {
-  pratt(tokens, 0);
-}
+ExpressionParse::ExpressionParse(Tokenizer& tokens) { pratt(tokens, 0); }
 
 std::string ExpressionParse::str() const noexcept {
   std::string out;
@@ -38,6 +37,8 @@ void ExpressionParse::pratt(Tokenizer& tokens, unsigned int precedence) {
   switch (tokens->type) {
     case TokenType::OpenPar:
       pratt(++tokens, 0);
+      if (tokens->type != TokenType::ClosePar)
+        throw std::runtime_error("Error: Unmatched parantheses in expression");
       ++tokens;
       break;
     case TokenType::Plus:
@@ -85,7 +86,7 @@ void ExpressionParse::pratt(Tokenizer& tokens, unsigned int precedence) {
         pratt(++tokens, 3);
         break;
       case TokenType::Exp:
-        if (precedence >= 5) return;
+        if (precedence > 5) return;
         pratt(++tokens, 5);
         break;
       default: return;
@@ -94,5 +95,4 @@ void ExpressionParse::pratt(Tokenizer& tokens, unsigned int precedence) {
   }
 }
 }  // namespace parse
-
 }  // namespace asql
