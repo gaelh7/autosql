@@ -153,6 +153,30 @@ void Tokenizer::read_token() {
       curr_ = Token{"", TokenType::Semicolon};
       ++column_;
       break;
+    case '=':
+      curr_ = Token{"", TokenType::Equal};
+      ++column_;
+      break;
+    case '+':
+      curr_ = Token{"", TokenType::Plus};
+      ++column_;
+      break;
+    case '-':
+      curr_ = Token{"", TokenType::Minus};
+      ++column_;
+      break;
+    case '*':
+      curr_ = Token{"", TokenType::Times};
+      ++column_;
+      break;
+    case '/':
+      curr_ = Token{"", TokenType::Div};
+      ++column_;
+      break;
+    case '^':
+      curr_ = Token{"", TokenType::Exp};
+      ++column_;
+      break;
     default: {
       size_t end_pos = data_.find_first_of(" \t\v\r\f'\".()[],;", column_);
       std::string_view raw =

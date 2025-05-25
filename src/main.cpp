@@ -21,7 +21,7 @@ std::string sql = "\t \nCREATE \t\n TABLE\t\r \nT1 ("
                   ") PRIMARY KEY (id, id2);";
 
 std::string t1 = "CREATE TABLE test (\n"
-                  "  id INT32[] DEFAULT (.5),\n"
+                  "  id INT32[] DEFAULT (1 + (2 * 3) + 4),\n"
                   "  ignored INT32\n"
                   ");\n"
                   "CREATE TABLE test2 (\n"
@@ -30,15 +30,15 @@ std::string t1 = "CREATE TABLE test (\n"
                   ");";
 std::string t2 = "CREATE TABLE test ("
                   "  id INT32 /* NOT NULL */ UNIQUE DEFAULT (5),"
-                  "  id2 INT32 UNIQUE DEFAULT (1) CHECK (info + 1 = 2 * (info + 4)),"
+                  "  id2 INT32 UNIQUE DEFAULT (1) CHECK (MAX(2, info) + - 1),"
                   "  id3 STRING DEFAULT ('abc')"
                   ");"
                   "CREATE TABLE test2 ("
                   "  id INT32 /* NOT NULL */ UNIQUE DEFAULT (5),"
-                  "  id2 INT32 UNIQUE DEFAULT (1) CHECK (info + 1 = 2 * (info + 4)),"
+                  "  id2 INT32 UNIQUE DEFAULT (1) CHECK (info + 1 = 2 + (info + 4) ^ 1),"
                   "  FOREIGN KEY (id, id2) REFERENCES test(id2, id),"
                   "  id3 STRING AS ('abc') REFERENCES test(id2),"
-                  "  CHECK (id + id2 < 10)"
+                  "  CHECK (id + id2 = 10)"
                   ");";
 
 int main() {

@@ -10,6 +10,7 @@ add_library(autosql STATIC
               src/autosql/parse/column.cpp
               src/autosql/parse/constraint.cpp
               src/autosql/parse/datatype.cpp
+              src/autosql/parse/expression.cpp
               src/autosql/schema/database.cpp
               src/autosql/schema/table.cpp
               src/autosql/schema/column.cpp

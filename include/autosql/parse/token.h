@@ -10,12 +10,21 @@ enum class TokenType {
   Unspecified,
   Eof,
   Identifier,
+  Func,
   OpenPar,
   ClosePar,
   OpenBracket,
   CloseBracket,
   Semicolon,
   Comma,
+  Equal,
+  UnaryPlus,
+  Plus,
+  UnaryMinus,
+  Minus,
+  Times,
+  Div,
+  Exp,
   StringLiteral,
   FloatLiteral,
   IntLiteral,
@@ -55,6 +64,7 @@ public:
   std::string_view str() const noexcept {
     switch (type) {
       case TokenType::Identifier:
+      case TokenType::Func:
       case TokenType::StringLiteral:
       case TokenType::FloatLiteral:
       case TokenType::IntLiteral: return data_;
@@ -66,6 +76,14 @@ public:
       case TokenType::CloseBracket: return "]";
       case TokenType::Semicolon: return ";";
       case TokenType::Comma: return ",";
+      case TokenType::Equal: return "=";
+      case TokenType::UnaryPlus:
+      case TokenType::Plus: return "+";
+      case TokenType::UnaryMinus:
+      case TokenType::Minus: return "-";
+      case TokenType::Times: return "*";
+      case TokenType::Div: return "/";
+      case TokenType::Exp: return "^";
       case TokenType::String: return "STRING";
       case TokenType::Int32: return "INT32";
       case TokenType::Int64: return "INT64";

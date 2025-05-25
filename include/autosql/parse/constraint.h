@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -23,8 +24,16 @@ class CheckParse : public ConstraintParse {
 public:
   ExpressionParse expr_;
 
-  CheckParse(std::string_view name, Tokenizer& tokens)
-    : ConstraintParse{name}, expr_{tokens} {}
+  CheckParse(std::string_view name, Tokenizer& tokens) : ConstraintParse{name} {
+    if (tokens->type != TokenType::OpenPar)
+      throw std::runtime_error(
+          "Error: CHECK expression must be within parentheses.");
+    expr_ = ExpressionParse{++tokens};
+    if (tokens->type != TokenType::ClosePar)
+      throw std::runtime_error(
+          "Error: CHECK expression must be within parentheses.");
+    ++tokens;
+  }
 };
 
 class ColumnParse;

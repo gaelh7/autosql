@@ -1,6 +1,5 @@
 #pragma once
 
-#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -12,37 +11,17 @@ namespace parse {
 
 class ExpressionParse {
   std::vector<Token> tokens_;
+
+  void parse_func(Tokenizer& tokens);
+
+  void pratt(Tokenizer& tokens, unsigned int precedence);
+
 public:
   ExpressionParse() = default;
 
-  ExpressionParse(Tokenizer& tokens) {
-    if (tokens->type != TokenType::OpenPar)
-      throw std::runtime_error(
-          "Error: Expressions must be within parentheses.");
+  ExpressionParse(Tokenizer& tokens);
 
-    size_t par_count = 1;
-
-    while (!tokens.done()) {
-      switch ((++tokens)->type) {
-        case TokenType::OpenPar: ++par_count; break;
-        case TokenType::ClosePar: --par_count; break;
-        default: break;
-      }
-      if (par_count == 0) break;
-
-      tokens_.push_back(*tokens);
-    }
-    ++tokens;
-  }
-
-  std::string str() const noexcept {
-    std::string out;
-    for (const Token& token: tokens_) {
-      out += token.str();
-      out += ' ';
-    }
-    return out;
-  }
+  std::string str() const noexcept;
 };
 }  // namespace parse
 }  // namespace asql

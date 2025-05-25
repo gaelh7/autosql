@@ -37,10 +37,16 @@ void ColumnParse::parse_constraints(Tokenizer& tokens) {
         unique = UniqueParse{con_name};
         ++tokens;
         continue;
-      case TokenType::Default: expr = ExpressionParse{++tokens}; continue;
       case TokenType::As:
-        expr      = ExpressionParse{++tokens};
         generated = true;
+        [[fallthrough]];
+      case TokenType::Default:
+        if ((++tokens)->type != TokenType::OpenPar)
+          throw std::runtime_error("Error: DEFAULT expression must be within parentheses.");
+        expr = ExpressionParse{++tokens};
+        if (tokens->type != TokenType::ClosePar)
+          throw std::runtime_error("Error: DEFAULT expression must be within parentheses.");
+        ++tokens;
         continue;
       case TokenType::References: {
         if (con_name.empty()) con_name = name + "_fk";
