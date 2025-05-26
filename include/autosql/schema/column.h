@@ -14,7 +14,8 @@ class Column {
   std::string name_;
   Datatype type_;
   std::optional<Expression> expr_;
-  bool not_null_ = false;
+  bool not_null_;
+  bool generated_;
 
 public:
   Column() = default;

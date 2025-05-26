@@ -29,21 +29,7 @@ class Column;
 class Table;
 class Database;
 
-template <typename T>
-class ForeignKey;
-
-template <>
-class ForeignKey<Column> : public Constraint {
-  const Table* table_;
-  const Column* column_;
-
-public:
-  ForeignKey(const Database& database,
-             const parse::ForeignKeyParse<parse::ColumnParse>& fk);
-};
-
-template <>
-class ForeignKey<Table> : public Constraint {
+class ForeignKey : public Constraint {
   const Table* table_;
   std::vector<std::pair<const Column*, const Column*>> columns_;
 

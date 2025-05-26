@@ -49,23 +49,22 @@ TableParse::TableParse(Tokenizer& tokens) {
   ++tokens;
 
   if (tokens->type == TokenType::Primary) {
-    if ((++tokens)->type == TokenType::Key &&
-        (++tokens)->type == TokenType::OpenPar) {
-      while (tokens->type != TokenType::ClosePar) {
-        if ((++tokens)->type != TokenType::Identifier)
-          throw std::runtime_error(
-              "Error: Expected column name in PRIMARY KEY");
-        primary_key.push_back(std::string{tokens->str()});
+    if ((++tokens)->type != TokenType::Key ||
+        (++tokens)->type != TokenType::OpenPar)
+      throw std::runtime_error("Error: Unexpected token after PRIMARY");
+    while (tokens->type != TokenType::ClosePar) {
+      if ((++tokens)->type != TokenType::Identifier)
+        throw std::runtime_error("Error: Expected column name in PRIMARY KEY");
+      primary_key.push_back(std::string{tokens->str()});
 
-        switch ((++tokens)->type) {
-          case TokenType::Comma:
-          case TokenType::ClosePar: break;
-          default:
-            throw std::runtime_error("Error: Unexpected token in primary key");
-        }
+      switch ((++tokens)->type) {
+        case TokenType::Comma:
+        case TokenType::ClosePar: break;
+        default:
+          throw std::runtime_error("Error: Unexpected token in primary key");
       }
     }
-    throw std::runtime_error("Error: Unexpected token after PRIMARY");
+    ++tokens;
   }
 }
 
@@ -153,8 +152,7 @@ std::string TableDiff::sql() {
       result += " SET NOT NULL;";
     }
     if (rhs.expr && !rhs.generated) {
-      if (!lhs.expr || lhs.generated ||
-          lhs.expr->str() != rhs.expr->str()) {
+      if (!lhs.expr || lhs.generated || lhs.expr->str() != rhs.expr->str()) {
         result += "ALTER TABLE ";
         result += name;
         result += " ALTER COLUMN ";
@@ -171,8 +169,7 @@ std::string TableDiff::sql() {
       result += " DROP DEFAULT;";
     }
     if (rhs.expr && rhs.generated) {
-      if (!lhs.expr || !lhs.generated ||
-          lhs.expr->str() != rhs.expr->str()) {
+      if (!lhs.expr || !lhs.generated || lhs.expr->str() != rhs.expr->str()) {
         result += "ALTER TABLE ";
         result += name;
         result += " ALTER COLUMN ";

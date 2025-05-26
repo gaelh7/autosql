@@ -39,7 +39,7 @@ std::string t2 = "CREATE TABLE test ("
                   "  FOREIGN KEY (id, id2) REFERENCES test(id2, id),"
                   "  id3 STRING AS ('abc') REFERENCES test(id2),"
                   "  CHECK (id + id2 = 10)"
-                  ");";
+                  ") PRIMARY KEY (id, id2);";
 
 int main() {
   std::filesystem::path f1 = std::filesystem::temp_directory_path().append("t1.sql");
