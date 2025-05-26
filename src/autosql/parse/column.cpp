@@ -1,23 +1,23 @@
 
-#include "autosql/parse/column.h"
+#include "autosql/parse/column.hpp"
 
 #include <stdexcept>
 
-#include "autosql/parse/datatype.h"
-#include "autosql/parse/token.h"
+#include "autosql/parse/datatype.hpp"
+#include "autosql/parse/token.hpp"
 
 namespace asql {
 namespace parse {
 
-ColumnParse::ColumnParse(Tokenizer& tokens) {
+ColumnParse::ColumnParse(Lexer& tokens) {
   name = tokens->str();
   type = DatatypeParse{++tokens};
 
   parse_constraints(tokens);
 }
 
-void ColumnParse::parse_constraints(Tokenizer& tokens) {
-  while (!tokens.done()) {
+void ColumnParse::parse_constraints(Lexer& tokens) {
+  while (true) {
     std::string con_name;
     if (tokens->type == TokenType::Constraint) {
       con_name = (++tokens)->str();

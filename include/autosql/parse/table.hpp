@@ -5,9 +5,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "autosql/parse/column.h"
-#include "autosql/parse/constraint.h"
-#include "autosql/parse/parser.h"
+#include "autosql/parse/column.hpp"
+#include "autosql/parse/constraint.hpp"
+#include "autosql/parse/parser.hpp"
 
 namespace asql {
 namespace parse {
@@ -23,7 +23,7 @@ public:
 
   TableParse() = default;
 
-  TableParse(Tokenizer& tokens);
+  TableParse(Lexer& tokens);
 };
 
 class TableDiff {

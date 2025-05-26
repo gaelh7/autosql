@@ -3,16 +3,16 @@
 #include <optional>
 #include <string>
 
-#include "autosql/parse/constraint.h"
-#include "autosql/parse/datatype.h"
-#include "autosql/parse/expression.h"
-#include "autosql/parse/parser.h"
+#include "autosql/parse/constraint.hpp"
+#include "autosql/parse/datatype.hpp"
+#include "autosql/parse/expression.hpp"
+#include "autosql/parse/parser.hpp"
 
 namespace asql {
 namespace parse {
 
 class ColumnParse {
-  void parse_constraints(Tokenizer& tokens);
+  void parse_constraints(Lexer& tokens);
 
 public:
   std::string name;
@@ -26,7 +26,7 @@ public:
 
   ColumnParse() = default;
 
-  ColumnParse(Tokenizer& tokens);
+  ColumnParse(Lexer& tokens);
 };
 }  // namespace parse
 }  // namespace asql

@@ -3,9 +3,9 @@
 #include <string>
 #include <utility>
 
-#include "autosql/parse/column.h"
-#include "autosql/parse/constraint.h"
-#include "autosql/schema/expression.h"
+#include "autosql/parse/column.hpp"
+#include "autosql/parse/constraint.hpp"
+#include "autosql/schema/expression.hpp"
 
 namespace asql {
 

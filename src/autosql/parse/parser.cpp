@@ -1,11 +1,11 @@
-#include "autosql/parse/parser.h"
+#include "autosql/parse/parser.hpp"
 
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <unordered_map>
 
-#include "autosql/parse/token.h"
+#include "autosql/parse/token.hpp"
 
 namespace asql {
 namespace parse {
@@ -34,14 +34,14 @@ static const std::unordered_map<std::string_view, TokenType> keyword_map = {
     {"UNIQUE",     TokenType::Unique    },
 };
 
-Tokenizer& Tokenizer::operator++() {
+Lexer& Lexer::operator++() {
   if (curr_.type == TokenType::Eof)
     throw std::runtime_error("Error: Unexpected end-of-file");
   read_token();
   return *this;
 }
 
-bool Tokenizer::seek_next() {
+bool Lexer::seek_next() {
   column_ = data_.find_first_not_of(" \t\v\r\f", column_);
   while (true) {
     if (column_ == std::string::npos ||
@@ -63,7 +63,7 @@ bool Tokenizer::seek_next() {
   }
 }
 
-void Tokenizer::parse_string() {
+void Lexer::parse_string() {
   size_t end_pos = data_.find(data_[column_], column_ + 1);
   if (end_pos == std::string::npos)
     throw std::runtime_error("Unterminated string literal");
@@ -73,7 +73,7 @@ void Tokenizer::parse_string() {
   column_ = end_pos + 1;
 }
 
-void Tokenizer::parse_num() noexcept {
+void Lexer::parse_num() noexcept {
   size_t end = data_.find_first_not_of("0123456789", column_ + 1);
   if (end == std::string::npos) {
     curr_ =
@@ -95,7 +95,7 @@ void Tokenizer::parse_num() noexcept {
   column_ = end;
 }
 
-void Tokenizer::parse_float() noexcept {
+void Lexer::parse_float() noexcept {
   size_t end = data_.find_first_not_of("0123456789", column_ + 1);
   if (end == std::string::npos) {
     curr_ =
@@ -108,7 +108,7 @@ void Tokenizer::parse_float() noexcept {
   column_ = end;
 }
 
-void Tokenizer::read_token() {
+void Lexer::read_token() {
   if (!seek_next()) {
     curr_ = Token{"", TokenType::Eof};
     return;

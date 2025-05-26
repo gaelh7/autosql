@@ -1,9 +1,9 @@
-#include "autosql/schema/constraint.h"
+#include "autosql/schema/constraint.hpp"
 
 #include <stdexcept>
 
-#include "autosql/parse/constraint.h"
-#include "autosql/schema/database.h"
+#include "autosql/parse/constraint.hpp"
+#include "autosql/schema/database.hpp"
 
 namespace asql {
 

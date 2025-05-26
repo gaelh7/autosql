@@ -5,9 +5,9 @@
 #include <string>
 #include <unordered_map>
 
-#include "autosql/parse/parser.h"
-#include "autosql/parse/table.h"
-#include "autosql/parse/token.h"
+#include "autosql/parse/parser.hpp"
+#include "autosql/parse/table.hpp"
+#include "autosql/parse/token.hpp"
 
 namespace asql {
 namespace parse {
@@ -17,8 +17,8 @@ public:
   std::unordered_map<std::string, TableParse> tables_;
 
   DatabaseParse(std::filesystem::path script) {
-    Tokenizer tokens{script};
-    while (!tokens.done()) {
+    Lexer tokens{script};
+    while (tokens->type != TokenType::Eof) {
       if (tokens->type == TokenType::Create &&
           (++tokens)->type == TokenType::Table) {
         ++tokens;

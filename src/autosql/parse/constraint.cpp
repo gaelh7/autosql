@@ -1,14 +1,14 @@
-#include "autosql/parse/constraint.h"
+#include "autosql/parse/constraint.hpp"
 
 #include <span>
 #include <stdexcept>
 
-#include "autosql/parse/token.h"
+#include "autosql/parse/token.hpp"
 
 namespace asql {
 namespace parse {
 
-ForeignKeyParse<ColumnParse>::ForeignKeyParse(std::string_view name, Tokenizer& tokens)
+ForeignKeyParse<ColumnParse>::ForeignKeyParse(std::string_view name, Lexer& tokens)
   : ConstraintParse{name} {
   table_ = tokens->str();
   if ((++tokens)->type != TokenType::OpenPar)
@@ -19,7 +19,7 @@ ForeignKeyParse<ColumnParse>::ForeignKeyParse(std::string_view name, Tokenizer& 
   ++tokens;
 }
 
-ForeignKeyParse<TableParse>::ForeignKeyParse(std::string_view name, Tokenizer& tokens)
+ForeignKeyParse<TableParse>::ForeignKeyParse(std::string_view name, Lexer& tokens)
   : ConstraintParse{name} {
   if (tokens->type != TokenType::OpenPar)
     throw std::runtime_error("Error: expected '('");

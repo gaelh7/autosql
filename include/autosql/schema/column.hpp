@@ -2,9 +2,9 @@
 
 #include <string>
 
-#include "autosql/parse/column.h"
-#include "autosql/schema/expression.h"
-#include "autosql/schema/datatype.h"
+#include "autosql/parse/column.hpp"
+#include "autosql/schema/expression.hpp"
+#include "autosql/schema/datatype.hpp"
 
 namespace asql {
 

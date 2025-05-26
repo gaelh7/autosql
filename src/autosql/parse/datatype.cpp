@@ -1,15 +1,15 @@
-#include "autosql/parse/datatype.h"
+#include "autosql/parse/datatype.hpp"
 
 #include <stdexcept>
 #include <string_view>
 
-#include "autosql/parse/parser.h"
-#include "autosql/parse/token.h"
+#include "autosql/parse/parser.hpp"
+#include "autosql/parse/token.hpp"
 
 namespace asql {
 namespace parse {
 
-DatatypeParse::DatatypeParse(Tokenizer& tokens) : is_array{false} {
+DatatypeParse::DatatypeParse(Lexer& tokens) : is_array{false} {
   switch (tokens->type) {
     case TokenType::Identifier:
       id_   = RawType::User;

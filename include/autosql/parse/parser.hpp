@@ -5,12 +5,12 @@
 #include <fstream>
 #include <string>
 
-#include "autosql/parse/token.h"
+#include "autosql/parse/token.hpp"
 
 namespace asql {
 namespace parse {
 
-class Tokenizer {
+class Lexer {
   std::ifstream file_;
   size_t line_;
   size_t column_;
@@ -28,7 +28,7 @@ class Tokenizer {
   void read_token();
 
 public:
-  Tokenizer(std::filesystem::path filename)
+  Lexer(std::filesystem::path filename)
     : file_{filename}, line_{}, column_{} {
     if (!file_.is_open()) throw std::runtime_error("Error: couldn't open file");
     file_.exceptions(std::ifstream::failbit);
@@ -40,20 +40,7 @@ public:
 
   const Token* operator->() const noexcept { return &curr_; }
 
-  Tokenizer& operator++();
-
-  bool done() const { return curr_.type == TokenType::Eof; }
-};
-
-class Parser {
-  std::filesystem::path filename_;
-
-public:
-  Parser(std::filesystem::path file) : filename_{file} {}
-
-  Tokenizer begin() { return Tokenizer{filename_}; }
-
-  Tokenizer end() { return Tokenizer{""}; }
+  Lexer& operator++();
 };
 }  // namespace parse
 }  // namespace asql

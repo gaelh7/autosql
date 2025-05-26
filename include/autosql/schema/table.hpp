@@ -3,9 +3,9 @@
 #include <string>
 #include <unordered_map>
 
-#include "autosql/parse/table.h"
-#include "autosql/schema/column.h"
-#include "autosql/schema/constraint.h"
+#include "autosql/parse/table.hpp"
+#include "autosql/schema/column.hpp"
+#include "autosql/schema/constraint.hpp"
 
 namespace asql {
 

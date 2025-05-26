@@ -3,8 +3,8 @@
 #include <string>
 #include <vector>
 
-#include "autosql/parse/parser.h"
-#include "autosql/parse/token.h"
+#include "autosql/parse/parser.hpp"
+#include "autosql/parse/token.hpp"
 
 namespace asql {
 namespace parse {
@@ -12,14 +12,14 @@ namespace parse {
 class ExpressionParse {
   std::vector<Token> tokens_;
 
-  void parse_func(Tokenizer& tokens);
+  void parse_func(Lexer& tokens);
 
-  void pratt(Tokenizer& tokens, unsigned int precedence);
+  void pratt(Lexer& tokens, unsigned int precedence);
 
 public:
   ExpressionParse() = default;
 
-  ExpressionParse(Tokenizer& tokens);
+  ExpressionParse(Lexer& tokens);
 
   std::string str() const noexcept;
 };

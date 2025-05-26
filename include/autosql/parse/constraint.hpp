@@ -6,7 +6,7 @@
 #include <utility>
 #include <vector>
 
-#include "autosql/parse/expression.h"
+#include "autosql/parse/expression.hpp"
 
 namespace asql {
 namespace parse {
@@ -24,7 +24,7 @@ class CheckParse : public ConstraintParse {
 public:
   ExpressionParse expr_;
 
-  CheckParse(std::string_view name, Tokenizer& tokens) : ConstraintParse{name} {
+  CheckParse(std::string_view name, Lexer& tokens) : ConstraintParse{name} {
     if (tokens->type != TokenType::OpenPar)
       throw std::runtime_error(
           "Error: CHECK expression must be within parentheses.");
@@ -48,7 +48,7 @@ public:
   std::string table_;
   std::string column_;
 
-  ForeignKeyParse(std::string_view name, Tokenizer& tokens);
+  ForeignKeyParse(std::string_view name, Lexer& tokens);
 };
 
 template <>
@@ -57,7 +57,7 @@ public:
   std::string table_;
   std::vector<std::pair<std::string, std::string>> columns_;
 
-  ForeignKeyParse(std::string_view name, Tokenizer& tokens);
+  ForeignKeyParse(std::string_view name, Lexer& tokens);
 };
 
 class UniqueParse : public ConstraintParse {

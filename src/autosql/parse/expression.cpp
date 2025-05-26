@@ -1,15 +1,15 @@
-#include "autosql/parse/expression.h"
+#include "autosql/parse/expression.hpp"
 
 #include <stdexcept>
 #include <string>
 
-#include "autosql/parse/parser.h"
-#include "autosql/parse/token.h"
+#include "autosql/parse/parser.hpp"
+#include "autosql/parse/token.hpp"
 
 namespace asql {
 namespace parse {
 
-ExpressionParse::ExpressionParse(Tokenizer& tokens) { pratt(tokens, 0); }
+ExpressionParse::ExpressionParse(Lexer& tokens) { pratt(tokens, 0); }
 
 std::string ExpressionParse::str() const noexcept {
   std::string out;
@@ -20,7 +20,7 @@ std::string ExpressionParse::str() const noexcept {
   return out;
 }
 
-void ExpressionParse::parse_func(Tokenizer& tokens) {
+void ExpressionParse::parse_func(Lexer& tokens) {
   tokens_.emplace_back("", TokenType::Semicolon);
   if ((++tokens)->type == TokenType::ClosePar) return;
   while (true) {
@@ -34,7 +34,7 @@ void ExpressionParse::parse_func(Tokenizer& tokens) {
   }
 }
 
-void ExpressionParse::pratt(Tokenizer& tokens, unsigned int precedence) {
+void ExpressionParse::pratt(Lexer& tokens, unsigned int precedence) {
   switch (tokens->type) {
     case TokenType::OpenPar:
       pratt(++tokens, 0);

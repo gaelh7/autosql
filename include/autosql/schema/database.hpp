@@ -2,8 +2,8 @@
 
 #include <unordered_map>
 
-#include "autosql/parse/database.h"
-#include "autosql/schema/table.h"
+#include "autosql/parse/database.hpp"
+#include "autosql/schema/table.hpp"
 
 namespace asql {
 

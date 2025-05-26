@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "autosql/parse/datatype.h"
+#include "autosql/parse/datatype.hpp"
 
 namespace asql {
 

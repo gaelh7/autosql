@@ -1,7 +1,7 @@
-#include "autosql/schema/column.h"
+#include "autosql/schema/column.hpp"
 
-#include "autosql/parse/column.h"
-#include "autosql/schema/constraint.h"
+#include "autosql/parse/column.hpp"
+#include "autosql/schema/constraint.hpp"
 
 namespace asql {
 

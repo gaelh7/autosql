@@ -1,4 +1,4 @@
-#include "autosql/schema/database.h"
+#include "autosql/schema/database.hpp"
 
 namespace asql {
 

@@ -1,12 +1,12 @@
-#include "autosql/parse/table.h"
+#include "autosql/parse/table.hpp"
 
-#include "autosql/parse/parser.h"
-#include "autosql/parse/token.h"
+#include "autosql/parse/parser.hpp"
+#include "autosql/parse/token.hpp"
 
 namespace asql {
 namespace parse {
 
-TableParse::TableParse(Tokenizer& tokens) {
+TableParse::TableParse(Lexer& tokens) {
   name = tokens->str();
 
   ++tokens;

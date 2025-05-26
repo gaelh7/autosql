@@ -1,8 +1,8 @@
-#include "autosql/schema/table.h"
+#include "autosql/schema/table.hpp"
 
 #include <stdexcept>
 
-#include "autosql/parse/table.h"
+#include "autosql/parse/table.hpp"
 
 namespace asql {
 

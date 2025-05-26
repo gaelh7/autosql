@@ -3,7 +3,7 @@
 #include <string>
 #include <string_view>
 
-#include "autosql/parse/parser.h"
+#include "autosql/parse/parser.hpp"
 
 namespace asql {
 namespace parse {
@@ -35,7 +35,7 @@ public:
 
   DatatypeParse() = default;
 
-  DatatypeParse(Tokenizer& tokens);
+  DatatypeParse(Lexer& tokens);
 
   std::string_view str() const noexcept;
 };
