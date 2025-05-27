@@ -31,7 +31,6 @@ public:
   Lexer(std::filesystem::path filename)
     : file_{filename}, line_{}, column_{} {
     if (!file_.is_open()) throw std::runtime_error("Error: couldn't open file");
-    file_.exceptions(std::ifstream::failbit);
     std::getline(file_, data_);
     read_token();
   }
