@@ -11,19 +11,19 @@ namespace parse {
 
 DatatypeParse::DatatypeParse(Lexer& tokens) : is_array{false} {
   switch (tokens->type) {
-    case TokenType::Identifier:
+    case TokenId::Identifier:
       id_   = RawType::User;
       name_ = tokens->str();
       break;
-    case TokenType::String: id_ = RawType::String; break;
-    case TokenType::Int32: id_ = RawType::Int32; break;
-    case TokenType::Int64: id_ = RawType::Int64; break;
-    case TokenType::Float: id_ = RawType::Float; break;
-    case TokenType::Double: id_ = RawType::Double; break;
+    case TokenId::String: id_ = RawType::String; break;
+    case TokenId::Int32: id_ = RawType::Int32; break;
+    case TokenId::Int64: id_ = RawType::Int64; break;
+    case TokenId::Float: id_ = RawType::Float; break;
+    case TokenId::Double: id_ = RawType::Double; break;
     default: throw std::runtime_error("Error: Not a type");
   }
-  if ((++tokens)->type == TokenType::OpenBracket) {
-    if ((++tokens)->type != TokenType::CloseBracket)
+  if ((++tokens)->type == TokenId::OpenBracket) {
+    if ((++tokens)->type != TokenId::CloseBracket)
       throw std::runtime_error("Error: Expected ']'");
     is_array = true;
     ++tokens;

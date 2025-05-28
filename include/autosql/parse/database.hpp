@@ -18,13 +18,13 @@ public:
 
   DatabaseParse(std::filesystem::path script) {
     Lexer tokens{script};
-    while (tokens->type != TokenType::Eof) {
-      if (tokens->type == TokenType::Create &&
-          (++tokens)->type == TokenType::Table) {
+    while (tokens->type != TokenId::Eof) {
+      if (tokens->type == TokenId::Create &&
+          (++tokens)->type == TokenId::Table) {
         ++tokens;
         tables_.try_emplace(std::string{tokens->str()}, tokens);
       }
-      if (tokens->type != TokenType::Semicolon) {
+      if (tokens->type != TokenId::Semicolon) {
         throw std::runtime_error("Expected ';'");
       }
       ++tokens;

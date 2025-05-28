@@ -10,33 +10,33 @@ TableParse::TableParse(Lexer& tokens) {
   name = tokens->str();
 
   ++tokens;
-  if (tokens->type != TokenType::OpenPar)
+  if (tokens->type != TokenId::OpenPar)
     throw std::runtime_error("Error: Expected '('");
-  while (tokens->type != TokenType::ClosePar) {
+  while (tokens->type != TokenId::ClosePar) {
     std::string con_name;
-    if ((++tokens)->type == TokenType::Constraint) {
+    if ((++tokens)->type == TokenId::Constraint) {
       con_name = (++tokens)->str();
       ++tokens;
     }
     switch (tokens->type) {
-      case TokenType::Identifier:
+      case TokenId::Identifier:
         if (!con_name.empty())
           throw std::runtime_error("Error: Expected constraint");
         columns.try_emplace(std::string{tokens->str()}, tokens);
         break;
-      case TokenType::Unique:
+      case TokenId::Unique:
         if (con_name.empty())
           con_name = name + "_uq" + std::to_string(unique_cons.size());
         unique_cons.emplace_back(con_name);
         ++tokens;
         break;
-      case TokenType::Check:
+      case TokenId::Check:
         if (con_name.empty())
           con_name = name + "_ck" + std::to_string(check_cons.size());
         check_cons.emplace_back(con_name, ++tokens);
         break;
-      case TokenType::Foreign:
-        if ((++tokens)->type != TokenType::Key)
+      case TokenId::Foreign:
+        if ((++tokens)->type != TokenId::Key)
           throw std::runtime_error(
               "Error: Expected keyword 'KEY' in FOREIGN KEY constraint");
         if (con_name.empty())
@@ -48,18 +48,18 @@ TableParse::TableParse(Lexer& tokens) {
   }
   ++tokens;
 
-  if (tokens->type == TokenType::Primary) {
-    if ((++tokens)->type != TokenType::Key ||
-        (++tokens)->type != TokenType::OpenPar)
+  if (tokens->type == TokenId::Primary) {
+    if ((++tokens)->type != TokenId::Key ||
+        (++tokens)->type != TokenId::OpenPar)
       throw std::runtime_error("Error: Unexpected token after PRIMARY");
-    while (tokens->type != TokenType::ClosePar) {
-      if ((++tokens)->type != TokenType::Identifier)
+    while (tokens->type != TokenId::ClosePar) {
+      if ((++tokens)->type != TokenId::Identifier)
         throw std::runtime_error("Error: Expected column name in PRIMARY KEY");
       primary_key.push_back(std::string{tokens->str()});
 
       switch ((++tokens)->type) {
-        case TokenType::Comma:
-        case TokenType::ClosePar: break;
+        case TokenId::Comma:
+        case TokenId::ClosePar: break;
         default:
           throw std::runtime_error("Error: Unexpected token in primary key");
       }

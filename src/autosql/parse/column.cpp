@@ -19,46 +19,45 @@ ColumnParse::ColumnParse(Lexer& tokens) {
 void ColumnParse::parse_constraints(Lexer& tokens) {
   while (true) {
     std::string con_name;
-    if (tokens->type == TokenType::Constraint) {
+    if (tokens->type == TokenId::Constraint) {
       con_name = (++tokens)->str();
       ++tokens;
     }
     switch (tokens->type) {
-      case TokenType::Not:
-        if ((++tokens)->type == TokenType::Null) {
-          not_null = true;
-          ++tokens;
-          continue;
-        }
-        throw std::runtime_error(
-            "Error: Expected symbol 'NULL' following 'NOT'");
-      case TokenType::Unique:
+      case TokenId::Not:
+        if ((++tokens)->type != TokenId::Null)
+          throw std::runtime_error(
+              "Error: Expected symbol 'NULL' following 'NOT'");
+        not_null = true;
+        ++tokens;
+        continue;
+      case TokenId::Unique:
         if (con_name.empty()) con_name = name + "_uq";
         unique = UniqueParse{con_name};
         ++tokens;
         continue;
-      case TokenType::As:
-        generated = true;
-        [[fallthrough]];
-      case TokenType::Default:
-        if ((++tokens)->type != TokenType::OpenPar)
-          throw std::runtime_error("Error: DEFAULT expression must be within parentheses.");
+      case TokenId::As: generated = true; [[fallthrough]];
+      case TokenId::Default:
+        if ((++tokens)->type != TokenId::OpenPar)
+          throw std::runtime_error(
+              "Error: DEFAULT expression must be within parentheses.");
         expr = ExpressionParse{++tokens};
-        if (tokens->type != TokenType::ClosePar)
-          throw std::runtime_error("Error: DEFAULT expression must be within parentheses.");
+        if (tokens->type != TokenId::ClosePar)
+          throw std::runtime_error(
+              "Error: DEFAULT expression must be within parentheses.");
         ++tokens;
         continue;
-      case TokenType::References: {
+      case TokenId::References: {
         if (con_name.empty()) con_name = name + "_fk";
         reference = ForeignKeyParse<ColumnParse>{con_name, ++tokens};
         continue;
       }
-      case TokenType::Check:
+      case TokenId::Check:
         if (con_name.empty()) con_name = name + "_ck";
         check = CheckParse{con_name, ++tokens};
         continue;
-      case TokenType::ClosePar:
-      case TokenType::Comma: return;
+      case TokenId::ClosePar:
+      case TokenId::Comma: return;
       default: throw std::runtime_error("Error: Unknown constraint type");
     }
   }

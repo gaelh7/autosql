@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <string_view>
 
 #include "autosql/parse/token.hpp"
 
@@ -28,12 +29,9 @@ class Lexer {
   void read_token();
 
 public:
-  Lexer(std::filesystem::path filename)
-    : file_{filename}, line_{}, column_{} {
-    if (!file_.is_open()) throw std::runtime_error("Error: couldn't open file");
-    std::getline(file_, data_);
-    read_token();
-  }
+  Lexer(std::filesystem::path filename);
+
+  void expect(TokenId id, std::string_view error_msg);
 
   const Token& operator*() const noexcept { return curr_; }
 

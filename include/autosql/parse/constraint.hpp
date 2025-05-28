@@ -25,11 +25,11 @@ public:
   ExpressionParse expr_;
 
   CheckParse(std::string_view name, Lexer& tokens) : ConstraintParse{name} {
-    if (tokens->type != TokenType::OpenPar)
+    if (tokens->type != TokenId::OpenPar)
       throw std::runtime_error(
           "Error: CHECK expression must be within parentheses.");
     expr_ = ExpressionParse{++tokens};
-    if (tokens->type != TokenType::ClosePar)
+    if (tokens->type != TokenId::ClosePar)
       throw std::runtime_error(
           "Error: CHECK expression must be within parentheses.");
     ++tokens;

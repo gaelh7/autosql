@@ -6,7 +6,7 @@
 namespace asql {
 namespace parse {
 
-enum class TokenType {
+enum class TokenId {
   Unspecified,
   Eof,
   Identifier,
@@ -55,56 +55,56 @@ class Token {
   std::string data_;
 
 public:
-  TokenType type;
+  TokenId type;
 
   Token() = default;
 
-  Token(std::string_view in, TokenType type) noexcept : data_{in}, type{type} {}
+  Token(std::string_view in, TokenId type) noexcept : data_{in}, type{type} {}
 
   std::string_view str() const noexcept {
     switch (type) {
-      case TokenType::Identifier:
-      case TokenType::Func:
-      case TokenType::StringLiteral:
-      case TokenType::FloatLiteral:
-      case TokenType::IntLiteral: return data_;
-      case TokenType::Unspecified:
-      case TokenType::Eof: return "";
-      case TokenType::OpenPar: return "(";
-      case TokenType::ClosePar: return ")";
-      case TokenType::OpenBracket: return "[";
-      case TokenType::CloseBracket: return "]";
-      case TokenType::Semicolon: return ";";
-      case TokenType::Comma: return ",";
-      case TokenType::Equal: return "=";
-      case TokenType::UnaryPlus:
-      case TokenType::Plus: return "+";
-      case TokenType::UnaryMinus:
-      case TokenType::Minus: return "-";
-      case TokenType::Times: return "*";
-      case TokenType::Div: return "/";
-      case TokenType::Exp: return "^";
-      case TokenType::String: return "STRING";
-      case TokenType::Int32: return "INT32";
-      case TokenType::Int64: return "INT64";
-      case TokenType::Float: return "FLOAT";
-      case TokenType::Double: return "DOUBLE";
-      case TokenType::Create: return "CREATE";
-      case TokenType::Table: return "TABLE";
-      case TokenType::Type: return "TYPE";
-      case TokenType::Grant: return "GRANT";
-      case TokenType::Constraint: return "CONSTRAINT";
-      case TokenType::Check: return "CHECK";
-      case TokenType::References: return "REFERENCES";
-      case TokenType::Default: return "DEFAULT";
-      case TokenType::Unique: return "UNIQUE";
-      case TokenType::Not: return "NOT";
-      case TokenType::Null: return "NULL";
-      case TokenType::As: return "AS";
-      case TokenType::Stored: return "STORED";
-      case TokenType::Primary: return "PRIMARY";
-      case TokenType::Foreign: return "FOREIGN";
-      case TokenType::Key: return "KEY";
+      case TokenId::Identifier:
+      case TokenId::Func:
+      case TokenId::StringLiteral:
+      case TokenId::FloatLiteral:
+      case TokenId::IntLiteral: return data_;
+      case TokenId::Unspecified:
+      case TokenId::Eof: return "";
+      case TokenId::OpenPar: return "(";
+      case TokenId::ClosePar: return ")";
+      case TokenId::OpenBracket: return "[";
+      case TokenId::CloseBracket: return "]";
+      case TokenId::Semicolon: return ";";
+      case TokenId::Comma: return ",";
+      case TokenId::Equal: return "=";
+      case TokenId::UnaryPlus:
+      case TokenId::Plus: return "+";
+      case TokenId::UnaryMinus:
+      case TokenId::Minus: return "-";
+      case TokenId::Times: return "*";
+      case TokenId::Div: return "/";
+      case TokenId::Exp: return "^";
+      case TokenId::String: return "STRING";
+      case TokenId::Int32: return "INT32";
+      case TokenId::Int64: return "INT64";
+      case TokenId::Float: return "FLOAT";
+      case TokenId::Double: return "DOUBLE";
+      case TokenId::Create: return "CREATE";
+      case TokenId::Table: return "TABLE";
+      case TokenId::Type: return "TYPE";
+      case TokenId::Grant: return "GRANT";
+      case TokenId::Constraint: return "CONSTRAINT";
+      case TokenId::Check: return "CHECK";
+      case TokenId::References: return "REFERENCES";
+      case TokenId::Default: return "DEFAULT";
+      case TokenId::Unique: return "UNIQUE";
+      case TokenId::Not: return "NOT";
+      case TokenId::Null: return "NULL";
+      case TokenId::As: return "AS";
+      case TokenId::Stored: return "STORED";
+      case TokenId::Primary: return "PRIMARY";
+      case TokenId::Foreign: return "FOREIGN";
+      case TokenId::Key: return "KEY";
     }
     return "";  // Unreachable
   }

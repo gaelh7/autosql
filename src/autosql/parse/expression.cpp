@@ -21,13 +21,13 @@ std::string ExpressionParse::str() const noexcept {
 }
 
 void ExpressionParse::parse_func(Lexer& tokens) {
-  tokens_.emplace_back("", TokenType::Semicolon);
-  if ((++tokens)->type == TokenType::ClosePar) return;
+  tokens_.emplace_back("", TokenId::Semicolon);
+  if ((++tokens)->type == TokenId::ClosePar) return;
   while (true) {
     pratt(tokens, 0);
     switch (tokens->type) {
-      case TokenType::ClosePar: return;
-      case TokenType::Comma: ++tokens; continue;
+      case TokenId::ClosePar: return;
+      case TokenId::Comma: ++tokens; continue;
       default:
         throw std::runtime_error("Error: Unexpected token in function call");
     }
@@ -36,32 +36,32 @@ void ExpressionParse::parse_func(Lexer& tokens) {
 
 void ExpressionParse::pratt(Lexer& tokens, unsigned int precedence) {
   switch (tokens->type) {
-    case TokenType::OpenPar:
+    case TokenId::OpenPar:
       pratt(++tokens, 0);
-      if (tokens->type != TokenType::ClosePar)
+      if (tokens->type != TokenId::ClosePar)
         throw std::runtime_error("Error: Unmatched parantheses in expression");
       ++tokens;
       break;
-    case TokenType::Plus:
+    case TokenId::Plus:
       pratt(++tokens, 4);
-      tokens_.emplace_back("", TokenType::UnaryPlus);
+      tokens_.emplace_back("", TokenId::UnaryPlus);
       break;
-    case TokenType::Minus:
+    case TokenId::Minus:
       pratt(++tokens, 4);
-      tokens_.emplace_back("", TokenType::UnaryMinus);
+      tokens_.emplace_back("", TokenId::UnaryMinus);
       break;
-    case TokenType::Identifier: {
+    case TokenId::Identifier: {
       Token id = *tokens;
-      if ((++tokens)->type == TokenType::OpenPar) {
+      if ((++tokens)->type == TokenId::OpenPar) {
         parse_func(tokens);
-        tokens_.emplace_back(id.str(), TokenType::Func);
+        tokens_.emplace_back(id.str(), TokenId::Func);
         ++tokens;
       } else tokens_.push_back(id);
       break;
     }
-    case TokenType::StringLiteral:
-    case TokenType::FloatLiteral:
-    case TokenType::IntLiteral:
+    case TokenId::StringLiteral:
+    case TokenId::FloatLiteral:
+    case TokenId::IntLiteral:
       tokens_.push_back(*tokens);
       ++tokens;
       break;
@@ -72,21 +72,21 @@ void ExpressionParse::pratt(Lexer& tokens, unsigned int precedence) {
   while (true) {
     Token curr = *tokens;
     switch (curr.type) {
-      case TokenType::Equal:
+      case TokenId::Equal:
         if (precedence >= 1) return;
         pratt(++tokens, 1);
         break;
-      case TokenType::Plus:
-      case TokenType::Minus:
+      case TokenId::Plus:
+      case TokenId::Minus:
         if (precedence >= 2) return;
         pratt(++tokens, 2);
         break;
-      case TokenType::Times:
-      case TokenType::Div:
+      case TokenId::Times:
+      case TokenId::Div:
         if (precedence >= 3) return;
         pratt(++tokens, 3);
         break;
-      case TokenType::Exp:
+      case TokenId::Exp:
         if (precedence > 5) return;
         pratt(++tokens, 5);
         break;
