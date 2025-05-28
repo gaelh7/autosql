@@ -1,7 +1,6 @@
 #pragma once
 
 #include <filesystem>
-#include <stdexcept>
 #include <string>
 #include <unordered_map>
 
@@ -24,9 +23,7 @@ public:
         ++tokens;
         tables_.try_emplace(std::string{tokens->str()}, tokens);
       }
-      if (tokens->type != TokenId::Semicolon) {
-        throw std::runtime_error("Expected ';'");
-      }
+      tokens.expect(TokenId::Semicolon);
       ++tokens;
     }
   }

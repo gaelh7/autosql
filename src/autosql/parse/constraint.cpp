@@ -8,21 +8,20 @@
 namespace asql {
 namespace parse {
 
-ForeignKeyParse<ColumnParse>::ForeignKeyParse(std::string_view name, Lexer& tokens)
+ForeignKeyParse<ColumnParse>::ForeignKeyParse(std::string_view name,
+                                              Lexer& tokens)
   : ConstraintParse{name} {
   table_ = tokens->str();
-  if ((++tokens)->type != TokenId::OpenPar)
-    throw std::runtime_error("Error: expected '('");
+  (++tokens).expect(TokenId::OpenPar);
   column_ = (++tokens)->str();
-  if ((++tokens)->type != TokenId::ClosePar)
-    throw std::runtime_error("Error: expected ')'");
+  (++tokens).expect(TokenId::ClosePar);
   ++tokens;
 }
 
-ForeignKeyParse<TableParse>::ForeignKeyParse(std::string_view name, Lexer& tokens)
+ForeignKeyParse<TableParse>::ForeignKeyParse(std::string_view name,
+                                             Lexer& tokens)
   : ConstraintParse{name} {
-  if (tokens->type != TokenId::OpenPar)
-    throw std::runtime_error("Error: expected '('");
+  tokens.expect(TokenId::OpenPar);
   while (tokens->type != TokenId::ClosePar) {
     columns_.emplace_back().first = (++tokens)->str();
     switch ((++tokens)->type) {
@@ -32,21 +31,16 @@ ForeignKeyParse<TableParse>::ForeignKeyParse(std::string_view name, Lexer& token
     }
   }
 
-  if ((++tokens)->type != TokenId::References)
-    throw std::runtime_error("Error: Expected keyword 'REFERENCE'");
+  (++tokens).expect(TokenId::References);
 
   table_ = (++tokens)->str();
-  if ((++tokens)->type != TokenId::OpenPar)
-    throw std::runtime_error("Error: expected '('");
+  (++tokens).expect(TokenId::OpenPar);
   for (auto& [col, ref] : std::span{columns_}.first(columns_.size() - 1)) {
     ref = (++tokens)->str();
-    if ((++tokens)->type != TokenId::Comma)
-      throw std::runtime_error(
-          "Error: Not enough references to match number of columns");
+    (++tokens).expect(TokenId::Comma);
   }
   columns_.back().second = (++tokens)->str();
-  if ((++tokens)->type != TokenId::ClosePar)
-    throw std::runtime_error("Error: expected ')'");
+  (++tokens).expect(TokenId::ClosePar);
   ++tokens;
 }
 }  // namespace parse

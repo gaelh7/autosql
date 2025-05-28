@@ -4,7 +4,6 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
-#include <string_view>
 
 #include "autosql/parse/token.hpp"
 
@@ -31,7 +30,7 @@ class Lexer {
 public:
   Lexer(std::filesystem::path filename);
 
-  void expect(TokenId id, std::string_view error_msg);
+  void expect(TokenId id);
 
   const Token& operator*() const noexcept { return curr_; }
 

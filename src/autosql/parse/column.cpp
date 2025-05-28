@@ -25,9 +25,7 @@ void ColumnParse::parse_constraints(Lexer& tokens) {
     }
     switch (tokens->type) {
       case TokenId::Not:
-        if ((++tokens)->type != TokenId::Null)
-          throw std::runtime_error(
-              "Error: Expected symbol 'NULL' following 'NOT'");
+        (++tokens).expect(TokenId::Null);
         not_null = true;
         ++tokens;
         continue;
@@ -38,13 +36,9 @@ void ColumnParse::parse_constraints(Lexer& tokens) {
         continue;
       case TokenId::As: generated = true; [[fallthrough]];
       case TokenId::Default:
-        if ((++tokens)->type != TokenId::OpenPar)
-          throw std::runtime_error(
-              "Error: DEFAULT expression must be within parentheses.");
+        (++tokens).expect(TokenId::OpenPar);
         expr = ExpressionParse{++tokens};
-        if (tokens->type != TokenId::ClosePar)
-          throw std::runtime_error(
-              "Error: DEFAULT expression must be within parentheses.");
+        tokens.expect(TokenId::ClosePar);
         ++tokens;
         continue;
       case TokenId::References: {

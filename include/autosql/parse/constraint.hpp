@@ -1,12 +1,12 @@
 #pragma once
 
-#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "autosql/parse/expression.hpp"
+#include "autosql/parse/token.hpp"
 
 namespace asql {
 namespace parse {
@@ -25,13 +25,9 @@ public:
   ExpressionParse expr_;
 
   CheckParse(std::string_view name, Lexer& tokens) : ConstraintParse{name} {
-    if (tokens->type != TokenId::OpenPar)
-      throw std::runtime_error(
-          "Error: CHECK expression must be within parentheses.");
+    tokens.expect(TokenId::OpenPar);
     expr_ = ExpressionParse{++tokens};
-    if (tokens->type != TokenId::ClosePar)
-      throw std::runtime_error(
-          "Error: CHECK expression must be within parentheses.");
+    tokens.expect(TokenId::ClosePar);
     ++tokens;
   }
 };

@@ -57,11 +57,11 @@ class Token {
 public:
   TokenId type;
 
-  Token() = default;
+  constexpr Token() = default;
 
-  Token(std::string_view in, TokenId type) noexcept : data_{in}, type{type} {}
+  constexpr Token(std::string_view in, TokenId type) noexcept : data_{in}, type{type} {}
 
-  std::string_view str() const noexcept {
+  constexpr std::string_view str() const noexcept {
     switch (type) {
       case TokenId::Identifier:
       case TokenId::Func:

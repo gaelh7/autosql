@@ -23,8 +23,7 @@ DatatypeParse::DatatypeParse(Lexer& tokens) : is_array{false} {
     default: throw std::runtime_error("Error: Not a type");
   }
   if ((++tokens)->type == TokenId::OpenBracket) {
-    if ((++tokens)->type != TokenId::CloseBracket)
-      throw std::runtime_error("Error: Expected ']'");
+    (++tokens).expect(TokenId::CloseBracket);
     is_array = true;
     ++tokens;
   }

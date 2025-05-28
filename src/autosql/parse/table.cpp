@@ -9,9 +9,7 @@ namespace parse {
 TableParse::TableParse(Lexer& tokens) {
   name = tokens->str();
 
-  ++tokens;
-  if (tokens->type != TokenId::OpenPar)
-    throw std::runtime_error("Error: Expected '('");
+  (++tokens).expect(TokenId::OpenPar);
   while (tokens->type != TokenId::ClosePar) {
     std::string con_name;
     if ((++tokens)->type == TokenId::Constraint) {
@@ -36,9 +34,7 @@ TableParse::TableParse(Lexer& tokens) {
         check_cons.emplace_back(con_name, ++tokens);
         break;
       case TokenId::Foreign:
-        if ((++tokens)->type != TokenId::Key)
-          throw std::runtime_error(
-              "Error: Expected keyword 'KEY' in FOREIGN KEY constraint");
+        (++tokens).expect(TokenId::Key);
         if (con_name.empty())
           con_name = name + "_fk" + std::to_string(ref_cons.size());
         ref_cons.emplace_back(con_name, ++tokens);
@@ -49,14 +45,12 @@ TableParse::TableParse(Lexer& tokens) {
   ++tokens;
 
   if (tokens->type == TokenId::Primary) {
-    if ((++tokens)->type != TokenId::Key ||
-        (++tokens)->type != TokenId::OpenPar)
-      throw std::runtime_error("Error: Unexpected token after PRIMARY");
+    (++tokens).expect(TokenId::Key);
+    (++tokens).expect(TokenId::OpenPar);
     while (tokens->type != TokenId::ClosePar) {
-      if ((++tokens)->type != TokenId::Identifier)
-        throw std::runtime_error("Error: Expected column name in PRIMARY KEY");
-      primary_key.push_back(std::string{tokens->str()});
+      (++tokens).expect(TokenId::Identifier);
 
+      primary_key.push_back(std::string{tokens->str()});
       switch ((++tokens)->type) {
         case TokenId::Comma:
         case TokenId::ClosePar: break;

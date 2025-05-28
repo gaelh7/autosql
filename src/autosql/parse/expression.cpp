@@ -38,8 +38,7 @@ void ExpressionParse::pratt(Lexer& tokens, unsigned int precedence) {
   switch (tokens->type) {
     case TokenId::OpenPar:
       pratt(++tokens, 0);
-      if (tokens->type != TokenId::ClosePar)
-        throw std::runtime_error("Error: Unmatched parantheses in expression");
+      tokens.expect(TokenId::ClosePar);
       ++tokens;
       break;
     case TokenId::Plus:
