@@ -6,8 +6,7 @@
 #include "autosql/parse/parser.hpp"
 #include "autosql/parse/token.hpp"
 
-namespace asql {
-namespace parse {
+namespace asql::parse {
 
 class ExpressionParse {
   std::vector<Token> tokens_;
@@ -23,5 +22,4 @@ public:
 
   std::string str() const noexcept;
 };
-}  // namespace parse
-}  // namespace asql
+}  // namespace asql::parse

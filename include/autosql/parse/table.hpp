@@ -9,8 +9,7 @@
 #include "autosql/parse/constraint.hpp"
 #include "autosql/parse/parser.hpp"
 
-namespace asql {
-namespace parse {
+namespace asql::parse {
 
 class TableParse {
 public:
@@ -38,5 +37,4 @@ public:
 
   std::string sql();
 };
-}  // namespace parse
-}  // namespace asql
+}  // namespace asql::parse

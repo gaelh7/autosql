@@ -8,8 +8,7 @@
 #include "autosql/parse/expression.hpp"
 #include "autosql/parse/token.hpp"
 
-namespace asql {
-namespace parse {
+namespace asql::parse {
 
 class ConstraintParse {
 public:
@@ -59,5 +58,4 @@ public:
 class UniqueParse : public ConstraintParse {
   using ConstraintParse::ConstraintParse;
 };
-}  // namespace parse
-}  // namespace asql
+}  // namespace asql::parse

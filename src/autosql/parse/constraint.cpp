@@ -5,8 +5,7 @@
 
 #include "autosql/parse/token.hpp"
 
-namespace asql {
-namespace parse {
+namespace asql::parse {
 
 ForeignKeyParse<ColumnParse>::ForeignKeyParse(std::string_view name,
                                               Lexer& tokens)
@@ -43,5 +42,4 @@ ForeignKeyParse<TableParse>::ForeignKeyParse(std::string_view name,
   (++tokens).expect(TokenId::ClosePar);
   ++tokens;
 }
-}  // namespace parse
-}  // namespace asql
+}  // namespace asql::parse

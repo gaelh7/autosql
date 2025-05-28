@@ -8,8 +8,7 @@
 #include "autosql/parse/table.hpp"
 #include "autosql/parse/token.hpp"
 
-namespace asql {
-namespace parse {
+namespace asql::parse {
 
 class DatabaseParse {
 public:
@@ -28,5 +27,4 @@ public:
     }
   }
 };
-}  // namespace parse
-}  // namespace asql
+}  // namespace asql::parse

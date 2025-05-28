@@ -5,8 +5,7 @@
 
 #include "autosql/parse/parser.hpp"
 
-namespace asql {
-namespace parse {
+namespace asql::parse {
 
 enum class RawType {
   User,
@@ -39,5 +38,4 @@ public:
 
   std::string_view str() const noexcept;
 };
-}  // namespace parse
-}  // namespace asql
+}  // namespace asql::parse

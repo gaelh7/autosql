@@ -8,8 +8,7 @@
 #include "autosql/parse/expression.hpp"
 #include "autosql/parse/parser.hpp"
 
-namespace asql {
-namespace parse {
+namespace asql::parse {
 
 class ColumnParse {
   void parse_constraints(Lexer& tokens);
@@ -28,5 +27,4 @@ public:
 
   ColumnParse(Lexer& tokens);
 };
-}  // namespace parse
-}  // namespace asql
+}  // namespace asql::parse

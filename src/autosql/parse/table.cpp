@@ -3,8 +3,7 @@
 #include "autosql/parse/parser.hpp"
 #include "autosql/parse/token.hpp"
 
-namespace asql {
-namespace parse {
+namespace asql::parse {
 
 TableParse::TableParse(Lexer& tokens) {
   name = tokens->str();
@@ -279,5 +278,4 @@ std::string TableDiff::sql() {
   }
   return result;
 }
-}  // namespace parse
-}  // namespace asql
+}  // namespace asql::parse

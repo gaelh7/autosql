@@ -8,8 +8,7 @@
 
 #include "autosql/parse/token.hpp"
 
-namespace asql {
-namespace parse {
+namespace asql::parse {
 
 static const std::unordered_map<std::string_view, TokenId> keyword_map = {
     {"AS",         TokenId::As        },
@@ -210,5 +209,4 @@ void Lexer::read_token() {
   }
 }
 
-}  // namespace parse
-}  // namespace asql
+}  // namespace asql::parse

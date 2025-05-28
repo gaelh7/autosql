@@ -7,8 +7,7 @@
 
 #include "autosql/parse/token.hpp"
 
-namespace asql {
-namespace parse {
+namespace asql::parse {
 
 class Lexer {
   std::ifstream file_;
@@ -38,5 +37,4 @@ public:
 
   Lexer& operator++();
 };
-}  // namespace parse
-}  // namespace asql
+}  // namespace asql::parse

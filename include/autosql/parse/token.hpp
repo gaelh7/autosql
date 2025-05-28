@@ -3,8 +3,7 @@
 #include <string>
 #include <string_view>
 
-namespace asql {
-namespace parse {
+namespace asql::parse {
 
 enum class TokenId {
   Unspecified,
@@ -59,7 +58,8 @@ public:
 
   constexpr Token() = default;
 
-  constexpr Token(std::string_view in, TokenId type) noexcept : data_{in}, type{type} {}
+  constexpr Token(std::string_view in, TokenId type) noexcept
+    : data_{in}, type{type} {}
 
   constexpr std::string_view str() const noexcept {
     switch (type) {
@@ -109,5 +109,4 @@ public:
     return "";  // Unreachable
   }
 };
-}  // namespace parse
-}  // namespace asql
+}  // namespace asql::parse

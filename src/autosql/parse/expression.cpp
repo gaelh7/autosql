@@ -6,8 +6,7 @@
 #include "autosql/parse/parser.hpp"
 #include "autosql/parse/token.hpp"
 
-namespace asql {
-namespace parse {
+namespace asql::parse {
 
 ExpressionParse::ExpressionParse(Lexer& tokens) { pratt(tokens, 0); }
 
@@ -94,5 +93,4 @@ void ExpressionParse::pratt(Lexer& tokens, unsigned int precedence) {
     tokens_.push_back(curr);
   }
 }
-}  // namespace parse
-}  // namespace asql
+}  // namespace asql::parse

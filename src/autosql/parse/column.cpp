@@ -6,8 +6,7 @@
 #include "autosql/parse/datatype.hpp"
 #include "autosql/parse/token.hpp"
 
-namespace asql {
-namespace parse {
+namespace asql::parse {
 
 ColumnParse::ColumnParse(Lexer& tokens) {
   name = tokens->str();
@@ -56,5 +55,4 @@ void ColumnParse::parse_constraints(Lexer& tokens) {
     }
   }
 }
-}  // namespace parse
-}  // namespace asql
+}  // namespace asql::parse

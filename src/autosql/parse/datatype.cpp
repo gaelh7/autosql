@@ -6,8 +6,7 @@
 #include "autosql/parse/parser.hpp"
 #include "autosql/parse/token.hpp"
 
-namespace asql {
-namespace parse {
+namespace asql::parse {
 
 DatatypeParse::DatatypeParse(Lexer& tokens) : is_array{false} {
   switch (tokens->type) {
@@ -47,8 +46,6 @@ std::string_view DatatypeParse::str() const noexcept {
     case RawType::Interval: return "INTERVAL";
     case RawType::Json: return "JSON";
   }
-  return ""; // Unreachable
+  return "";  // Unreachable
 }
-}  // namespace parse
-
-}  // namespace asql
+}  // namespace asql::parse
