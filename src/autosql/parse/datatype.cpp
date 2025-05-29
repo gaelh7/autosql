@@ -4,7 +4,7 @@
 #include <string_view>
 
 #include "autosql/parse/parser.hpp"
-#include "autosql/parse/token.hpp"
+#include "autosql/symbols.hpp"
 
 namespace asql::parse {
 

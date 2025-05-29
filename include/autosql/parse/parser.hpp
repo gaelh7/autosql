@@ -5,7 +5,7 @@
 #include <fstream>
 #include <string>
 
-#include "autosql/parse/token.hpp"
+#include "autosql/symbols.hpp"
 
 namespace asql::parse {
 

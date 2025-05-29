@@ -4,14 +4,14 @@
 #include <vector>
 
 #include "autosql/parse/parser.hpp"
-#include "autosql/parse/token.hpp"
+#include "autosql/symbols.hpp"
 
 namespace asql::parse {
 
 class ExpressionParse {
-  std::vector<Token> tokens_;
+  std::vector<Operator> tokens_;
 
-  void parse_func(Lexer& tokens);
+  unsigned int parse_func(Lexer& tokens);
 
   void pratt(Lexer& tokens, unsigned int precedence);
 

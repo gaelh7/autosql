@@ -1,15 +1,15 @@
 #pragma once
 
+#include <stdexcept>
 #include <string>
 #include <string_view>
 
-namespace asql::parse {
+namespace asql {
 
 enum class TokenId {
   Unspecified,
   Eof,
   Identifier,
-  Func,
   OpenPar,
   ClosePar,
   OpenBracket,
@@ -17,9 +17,7 @@ enum class TokenId {
   Semicolon,
   Comma,
   Equal,
-  UnaryPlus,
   Plus,
-  UnaryMinus,
   Minus,
   Times,
   Div,
@@ -64,7 +62,6 @@ public:
   constexpr std::string_view str() const noexcept {
     switch (type) {
       case TokenId::Identifier:
-      case TokenId::Func:
       case TokenId::StringLiteral:
       case TokenId::FloatLiteral:
       case TokenId::IntLiteral: return data_;
@@ -77,9 +74,7 @@ public:
       case TokenId::Semicolon: return ";";
       case TokenId::Comma: return ",";
       case TokenId::Equal: return "=";
-      case TokenId::UnaryPlus:
       case TokenId::Plus: return "+";
-      case TokenId::UnaryMinus:
       case TokenId::Minus: return "-";
       case TokenId::Times: return "*";
       case TokenId::Div: return "/";
@@ -109,4 +104,82 @@ public:
     return "";  // Unreachable
   }
 };
-}  // namespace asql::parse
+
+enum class OpId {
+  Identifier,
+  Function,
+  StringLiteral,
+  FloatLiteral,
+  IntLiteral,
+  Equal,
+  UnaryPlus,
+  Plus,
+  UnaryMinus,
+  Minus,
+  Times,
+  Div,
+  Exp,
+};
+
+class Operator {
+  std::string data_;
+  OpId id_;
+  unsigned int args_;
+
+public:
+  Operator(const Token& token) {
+    switch (token.type) {
+      case TokenId::Identifier:
+        data_ = token.str();
+        id_   = OpId::Identifier;
+        break;
+      case TokenId::StringLiteral:
+        data_ = token.str();
+        id_   = OpId::StringLiteral;
+        break;
+      case TokenId::FloatLiteral:
+        data_ = token.str();
+        id_   = OpId::FloatLiteral;
+        break;
+      case TokenId::IntLiteral:
+        data_ = token.str();
+        id_   = OpId::IntLiteral;
+        break;
+      case TokenId::Equal: id_ = OpId::Equal; break;
+      case TokenId::Plus: id_ = OpId::Plus; break;
+      case TokenId::Minus: id_ = OpId::Minus; break;
+      case TokenId::Times: id_ = OpId::Times; break;
+      case TokenId::Div: id_ = OpId::Div; break;
+      case TokenId::Exp: id_ = OpId::Exp; break;
+      default: throw std::runtime_error("Error: Not an operator or operand");
+    }
+  }
+
+  Operator(OpId id) : id_{id} {}
+
+  Operator(std::string_view func_name, unsigned int num_args)
+    : data_{func_name}, id_{OpId::Function}, args_{num_args} {}
+
+  std::string_view str() const noexcept {
+    switch (id_) {
+      case OpId::Identifier:
+      case OpId::Function:
+      case OpId::StringLiteral:
+      case OpId::FloatLiteral:
+      case OpId::IntLiteral: return data_;
+      case OpId::Equal: return "=";
+      case OpId::UnaryPlus:
+      case OpId::Plus: return "+";
+      case OpId::UnaryMinus:
+      case OpId::Minus: return "-";
+      case OpId::Times: return "+";
+      case OpId::Div: return "/";
+      case OpId::Exp: return "^"; ;
+    }
+    return "";
+  }
+
+  unsigned int args() const noexcept { return args_; }
+};
+
+}  // namespace asql

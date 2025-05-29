@@ -6,7 +6,7 @@
 #include <string_view>
 #include <unordered_map>
 
-#include "autosql/parse/token.hpp"
+#include "autosql/symbols.hpp"
 
 namespace asql::parse {
 
@@ -34,17 +34,6 @@ static const std::unordered_map<std::string_view, TokenId> keyword_map = {
     {"UNIQUE",     TokenId::Unique    },
 };
 
-static constexpr std::string_view token_debug_str(TokenId id) {
-  switch (id) {
-    case TokenId::Identifier: return "Identifier";
-    case TokenId::Func: return "Function";
-    case TokenId::StringLiteral: return "String Literal";
-    case TokenId::FloatLiteral: return "Float Literal";
-    case TokenId::IntLiteral: return "Integer Literal";
-    default: return Token{"", id}.str();
-  }
-}
-
 Lexer::Lexer(std::filesystem::path filename)
   : file_{filename}, line_{}, column_{} {
   if (!file_.is_open()) throw std::runtime_error("Error: couldn't open file");
@@ -53,9 +42,17 @@ Lexer::Lexer(std::filesystem::path filename)
 }
 
 void Lexer::expect(TokenId id) {
+  std::string s;
+  switch (id) {
+    case TokenId::Identifier: s = "Identifier"; break;
+    case TokenId::StringLiteral: s = "String Literal"; break;
+    case TokenId::FloatLiteral: s = "Float Literal"; break;
+    case TokenId::IntLiteral: s = "Integer Literal"; break;
+    default: s = Token{"", id}.str(); break;
+  }
   if (curr_.type != id)
     throw std::runtime_error(std::format("Line {}: Expected Token {}",
-                                         line_ + 1, token_debug_str(id)));
+                                         line_ + 1, s));
 }
 
 Lexer& Lexer::operator++() {

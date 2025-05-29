@@ -1,7 +1,7 @@
 #include "autosql/parse/table.hpp"
 
 #include "autosql/parse/parser.hpp"
-#include "autosql/parse/token.hpp"
+#include "autosql/symbols.hpp"
 
 namespace asql::parse {
 

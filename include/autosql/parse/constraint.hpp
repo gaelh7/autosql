@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "autosql/parse/expression.hpp"
-#include "autosql/parse/token.hpp"
+#include "autosql/symbols.hpp"
 
 namespace asql::parse {
 
