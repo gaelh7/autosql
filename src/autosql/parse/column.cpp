@@ -28,11 +28,6 @@ void ColumnParse::parse_constraints(Lexer& tokens) {
         not_null = true;
         ++tokens;
         continue;
-      case TokenId::Unique:
-        if (con_name.empty()) con_name = name + "_uq";
-        unique = UniqueParse{con_name};
-        ++tokens;
-        continue;
       case TokenId::As: generated = true; [[fallthrough]];
       case TokenId::Default:
         (++tokens).expect(TokenId::OpenPar);
@@ -40,13 +35,18 @@ void ColumnParse::parse_constraints(Lexer& tokens) {
         tokens.expect(TokenId::ClosePar);
         ++tokens;
         continue;
+      case TokenId::Unique:
+        if (con_name.empty()) con_name = std::string{name} + "_uq";
+        unique = UniqueParse{con_name};
+        ++tokens;
+        continue;
       case TokenId::References: {
-        if (con_name.empty()) con_name = name + "_fk";
+        if (con_name.empty()) con_name = std::string{name} + "_fk";
         reference = ForeignKeyParse<ColumnParse>{con_name, ++tokens};
         continue;
       }
       case TokenId::Check:
-        if (con_name.empty()) con_name = name + "_ck";
+        if (con_name.empty()) con_name = std::string{name} + "_ck";
         check = CheckParse{con_name, ++tokens};
         continue;
       case TokenId::ClosePar:

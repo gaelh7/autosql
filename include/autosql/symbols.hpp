@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -105,6 +106,33 @@ public:
   }
 };
 
+class Identifier {
+  std::string data_;
+
+public:
+  constexpr Identifier() = default;
+
+  constexpr Identifier(std::string_view str) : data_{str} {}
+
+  constexpr bool operator==(const Identifier& other) const noexcept {
+    return data_ == other.data_;
+  }
+
+  constexpr bool operator==(std::string_view other) const noexcept {
+    return data_ == other;
+  }
+
+  constexpr operator std::string_view() const noexcept { return data_; }
+};
+
+struct IdHash {
+  using is_transparent = void;
+
+  size_t operator()(std::string_view s) const noexcept {
+    return std::hash<std::string_view>()(s);
+  }
+};
+
 enum class OpId {
   Identifier,
   Function,
@@ -127,7 +155,7 @@ class Operator {
   unsigned int args_;
 
 public:
-  Operator(const Token& token) {
+  constexpr Operator(const Token& token) {
     switch (token.type) {
       case TokenId::Identifier:
         data_ = token.str();
@@ -155,12 +183,12 @@ public:
     }
   }
 
-  Operator(OpId id) : id_{id} {}
+  constexpr Operator(OpId id) : id_{id} {}
 
-  Operator(std::string_view func_name, unsigned int num_args)
+  constexpr Operator(std::string_view func_name, unsigned int num_args)
     : data_{func_name}, id_{OpId::Function}, args_{num_args} {}
 
-  std::string_view str() const noexcept {
+  constexpr std::string_view str() const noexcept {
     switch (id_) {
       case OpId::Identifier:
       case OpId::Function:
@@ -179,7 +207,7 @@ public:
     return "";
   }
 
-  unsigned int args() const noexcept { return args_; }
+  constexpr unsigned int args() const noexcept { return args_; }
 };
 
 }  // namespace asql

@@ -1,8 +1,7 @@
 #pragma once
 
-#include <string>
-
 #include "autosql/parse/datatype.hpp"
+#include "autosql/symbols.hpp"
 
 namespace asql {
 
@@ -26,7 +25,7 @@ enum class TypeId {
 };
 
 class Datatype {
-  std::string name_;
+  Identifier name_;
   TypeId id_;
   bool is_array;
 

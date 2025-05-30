@@ -1,7 +1,7 @@
 #pragma once
 
 #include <filesystem>
-#include <string>
+#include <functional>
 #include <unordered_map>
 
 #include "autosql/parse/parser.hpp"
@@ -12,7 +12,7 @@ namespace asql::parse {
 
 class DatabaseParse {
 public:
-  std::unordered_map<std::string, TableParse> tables_;
+  std::unordered_map<Identifier, TableParse, IdHash, std::equal_to<>> tables_;
 
   DatabaseParse(std::filesystem::path script) {
     Lexer tokens{script};
@@ -20,7 +20,7 @@ public:
       if (tokens->type == TokenId::Create &&
           (++tokens)->type == TokenId::Table) {
         ++tokens;
-        tables_.try_emplace(std::string{tokens->str()}, tokens);
+        tables_.try_emplace(tokens->str(), tokens);
       }
       tokens.expect(TokenId::Semicolon);
       ++tokens;

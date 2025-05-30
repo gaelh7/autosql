@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -8,13 +9,14 @@
 #include "autosql/parse/column.hpp"
 #include "autosql/parse/constraint.hpp"
 #include "autosql/parse/parser.hpp"
+#include "autosql/symbols.hpp"
 
 namespace asql::parse {
 
 class TableParse {
 public:
-  std::string name;
-  std::unordered_map<std::string, ColumnParse> columns;
+  Identifier name;
+  std::unordered_map<Identifier, ColumnParse, IdHash, std::equal_to<>> columns;
   std::vector<UniqueParse> unique_cons;
   std::vector<CheckParse> check_cons;
   std::vector<ForeignKeyParse<TableParse>> ref_cons;

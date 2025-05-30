@@ -1,9 +1,9 @@
 #pragma once
 
-#include <string>
 #include <string_view>
 
 #include "autosql/parse/parser.hpp"
+#include "autosql/symbols.hpp"
 
 namespace asql::parse {
 
@@ -26,7 +26,7 @@ enum class RawType {
 };
 
 class DatatypeParse {
-  std::string name_;
+  Identifier name_;
 
 public:
   RawType id_;

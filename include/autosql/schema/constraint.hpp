@@ -1,17 +1,17 @@
 #pragma once
 
-#include <string>
 #include <utility>
 
 #include "autosql/parse/column.hpp"
 #include "autosql/parse/constraint.hpp"
 #include "autosql/schema/expression.hpp"
+#include "autosql/symbols.hpp"
 
 namespace asql {
 
 class Constraint {
 protected:
-  std::string name_;
+  Identifier name_;
 
 public:
   Constraint(std::string_view name) : name_{name} {}

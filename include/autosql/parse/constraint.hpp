@@ -12,7 +12,7 @@ namespace asql::parse {
 
 class ConstraintParse {
 public:
-  std::string name_;
+  Identifier name_;
 
   ConstraintParse() = default;
 

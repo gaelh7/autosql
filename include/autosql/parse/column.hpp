@@ -1,12 +1,12 @@
 #pragma once
 
 #include <optional>
-#include <string>
 
 #include "autosql/parse/constraint.hpp"
 #include "autosql/parse/datatype.hpp"
 #include "autosql/parse/expression.hpp"
 #include "autosql/parse/parser.hpp"
+#include "autosql/symbols.hpp"
 
 namespace asql::parse {
 
@@ -14,7 +14,7 @@ class ColumnParse {
   void parse_constraints(Lexer& tokens);
 
 public:
-  std::string name;
+  Identifier name;
   DatatypeParse type;
   std::optional<ExpressionParse> expr;
   std::optional<CheckParse> check;
