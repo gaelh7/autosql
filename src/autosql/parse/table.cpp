@@ -24,8 +24,7 @@ TableParse::TableParse(Lexer& tokens) {
       case TokenId::Unique:
         if (con_name.empty())
           con_name = std::string{name} + "_uq" + std::to_string(unique_cons.size());
-        unique_cons.emplace_back(con_name);
-        ++tokens;
+        unique_cons.emplace_back(con_name, ++tokens);
         break;
       case TokenId::Check:
         if (con_name.empty())

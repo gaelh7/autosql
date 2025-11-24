@@ -19,7 +19,7 @@ public:
   std::optional<ExpressionParse> expr;
   std::optional<CheckParse> check;
   std::optional<ForeignKeyParse<ColumnParse>> reference;
-  std::optional<UniqueParse> unique;
+  std::optional<UniqueParse<ColumnParse>> unique;
   bool not_null  = false;
   bool generated = false;
 

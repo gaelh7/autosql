@@ -9,7 +9,7 @@ namespace asql::parse {
 
 ForeignKeyParse<ColumnParse>::ForeignKeyParse(std::string_view name,
                                               Lexer& tokens)
-  : ConstraintParse{name} {
+  : name_{name} {
   table_ = tokens->str();
   (++tokens).expect(TokenId::OpenPar);
   column_ = (++tokens)->str();
@@ -19,7 +19,7 @@ ForeignKeyParse<ColumnParse>::ForeignKeyParse(std::string_view name,
 
 ForeignKeyParse<TableParse>::ForeignKeyParse(std::string_view name,
                                              Lexer& tokens)
-  : ConstraintParse{name} {
+  : name_{name} {
   tokens.expect(TokenId::OpenPar);
   while (tokens->type != TokenId::ClosePar) {
     columns_.emplace_back().first = (++tokens)->str();
@@ -40,6 +40,20 @@ ForeignKeyParse<TableParse>::ForeignKeyParse(std::string_view name,
   }
   columns_.back().second = (++tokens)->str();
   (++tokens).expect(TokenId::ClosePar);
+  ++tokens;
+}
+
+UniqueParse<TableParse>::UniqueParse(std::string_view name, Lexer& tokens)
+  : name_{name} {
+  tokens.expect(TokenId::OpenPar);
+  while (tokens->type != TokenId::ClosePar) {
+    columns_.emplace_back((++tokens)->str());
+    switch ((++tokens)->type) {
+      case TokenId::Comma:
+      case TokenId::ClosePar: break;
+      default: throw std::runtime_error("Error: Expected ')' or ','");
+    }
+  }
   ++tokens;
 }
 }  // namespace asql::parse

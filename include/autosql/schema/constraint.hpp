@@ -9,27 +9,21 @@
 
 namespace asql {
 
-class Constraint {
-protected:
+class Check {
   Identifier name_;
-
-public:
-  Constraint(std::string_view name) : name_{name} {}
-};
-
-class Check : public Constraint {
   Expression expr_;
 
 public:
   Check(const parse::CheckParse& check)
-    : Constraint{check.name_}, expr_{check.expr_} {}
+    : name_{check.name_}, expr_{check.expr_} {}
 };
 
 class Column;
 class Table;
 class Database;
 
-class ForeignKey : public Constraint {
+class ForeignKey {
+  Identifier name_;
   const Table* table_;
   std::vector<std::pair<const Column*, const Column*>> columns_;
 
@@ -41,9 +35,16 @@ public:
              const parse::ForeignKeyParse<parse::TableParse>& fk);
 };
 
-class Unique : public Constraint {
+class Unique {
+  Identifier name_;
+  std::vector<const Column*> columns_;
+
 public:
-  Unique(const parse::UniqueParse& unique) : Constraint{unique.name_} {}
+  Unique(const Column& col,
+         const parse::UniqueParse<parse::ColumnParse>& unique)
+    : name_{unique.name_}, columns_{&col} {}
+
+  Unique(const Table& table, const parse::UniqueParse<parse::TableParse>& unique);
 };
 
 }  // namespace asql

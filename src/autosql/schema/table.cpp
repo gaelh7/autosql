@@ -25,13 +25,13 @@ void Table::set_constraints(const Database& database,
     if (col.check) check_cons.emplace_back(*col.check);
     if (col.reference)
       ref_cons.emplace_back(database, columns_[name], *col.reference);
-    if (col.unique) unique_cons.emplace_back(*col.unique);
+    if (col.unique) unique_cons.emplace_back(col, *col.unique);
   }
   check_cons.insert(check_cons.end(), table.check_cons.begin(),
                     table.check_cons.end());
-  unique_cons.insert(unique_cons.end(), table.unique_cons.begin(),
-                     table.unique_cons.end());
-
+  for (const auto& unique : table.unique_cons) {
+    unique_cons.emplace_back(*this, unique);
+  }
   for (const auto& con : table.ref_cons) {
     ref_cons.emplace_back(database, *this, con);
   }

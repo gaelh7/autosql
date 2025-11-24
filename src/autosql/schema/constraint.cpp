@@ -7,10 +7,9 @@
 
 namespace asql {
 
-ForeignKey::ForeignKey(
-    const Database& database, const Column& column,
-    const parse::ForeignKeyParse<parse::ColumnParse>& fk)
-  : Constraint{fk.name_} {
+ForeignKey::ForeignKey(const Database& database, const Column& column,
+                       const parse::ForeignKeyParse<parse::ColumnParse>& fk)
+  : name_{fk.name_} {
   table_ = database.table(fk.table_);
   if (!table_)
     throw std::runtime_error("Error: Undefined reference to table: " +
@@ -22,10 +21,9 @@ ForeignKey::ForeignKey(
                              "' not found in table '" + fk.table_ + "'");
 }
 
-ForeignKey::ForeignKey(
-    const Database& database, const Table& table,
-    const parse::ForeignKeyParse<parse::TableParse>& fk)
-  : Constraint{fk.name_} {
+ForeignKey::ForeignKey(const Database& database, const Table& table,
+                       const parse::ForeignKeyParse<parse::TableParse>& fk)
+  : name_{fk.name_} {
   table_ = database.table(fk.table_);
   if (!table_)
     throw std::runtime_error("Error: Undefined reference to table: " +
@@ -37,6 +35,18 @@ ForeignKey::ForeignKey(
     if (!columns_.back().second)
       throw std::runtime_error("Error: Column '" + ref +
                                "' not found in table '" + fk.table_ + "'");
+  }
+}
+
+Unique::Unique(const Table& table,
+               const parse::UniqueParse<parse::TableParse>& unique)
+  : name_{unique.name_} {
+  columns_.reserve(unique.columns_.size());
+  for (std::string_view col : unique.columns_) {
+    const Column* column = table.column(col);
+    if (!column)
+      throw std::runtime_error(std::format("Error: Column '{}' does not exist", col));
+    columns_.push_back(column);
   }
 }
 

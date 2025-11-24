@@ -10,20 +10,12 @@
 
 namespace asql::parse {
 
-class ConstraintParse {
+class CheckParse {
 public:
   Identifier name_;
-
-  ConstraintParse() = default;
-
-  ConstraintParse(std::string_view name) : name_{name} {}
-};
-
-class CheckParse : public ConstraintParse {
-public:
   ExpressionParse expr_;
 
-  CheckParse(std::string_view name, Lexer& tokens) : ConstraintParse{name} {
+  CheckParse(std::string_view name, Lexer& tokens) : name_{name} {
     tokens.expect(TokenId::OpenPar);
     expr_ = ExpressionParse{++tokens};
     tokens.expect(TokenId::ClosePar);
@@ -38,8 +30,9 @@ template <typename T>
 class ForeignKeyParse;
 
 template <>
-class ForeignKeyParse<ColumnParse> : public ConstraintParse {
+class ForeignKeyParse<ColumnParse> {
 public:
+  Identifier name_;
   std::string table_;
   std::string column_;
 
@@ -47,15 +40,32 @@ public:
 };
 
 template <>
-class ForeignKeyParse<TableParse> : public ConstraintParse {
+class ForeignKeyParse<TableParse> {
 public:
+  Identifier name_;
   std::string table_;
   std::vector<std::pair<std::string, std::string>> columns_;
 
   ForeignKeyParse(std::string_view name, Lexer& tokens);
 };
 
-class UniqueParse : public ConstraintParse {
-  using ConstraintParse::ConstraintParse;
+template <typename T>
+class UniqueParse;
+
+template <>
+class UniqueParse<ColumnParse> {
+public:
+  Identifier name_;
+
+  UniqueParse(std::string_view name) : name_{name} {}
+};
+
+template <>
+class UniqueParse<TableParse> {
+public:
+  Identifier name_;
+  std::vector<std::string> columns_;
+
+  UniqueParse(std::string_view name, Lexer& tokens);
 };
 }  // namespace asql::parse

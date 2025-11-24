@@ -17,7 +17,7 @@ class TableParse {
 public:
   Identifier name;
   std::unordered_map<Identifier, ColumnParse, IdHash, std::equal_to<>> columns;
-  std::vector<UniqueParse> unique_cons;
+  std::vector<UniqueParse<TableParse>> unique_cons;
   std::vector<CheckParse> check_cons;
   std::vector<ForeignKeyParse<TableParse>> ref_cons;
   std::vector<std::string> primary_key;

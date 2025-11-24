@@ -37,7 +37,7 @@ void ColumnParse::parse_constraints(Lexer& tokens) {
         continue;
       case TokenId::Unique:
         if (con_name.empty()) con_name = std::string{name} + "_uq";
-        unique = UniqueParse{con_name};
+        unique = UniqueParse<ColumnParse>{con_name};
         ++tokens;
         continue;
       case TokenId::References: {
