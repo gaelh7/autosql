@@ -1,11 +1,13 @@
 #pragma once
 
 #include <utility>
+#include <vector>
 
-#include "autosql/parse/column.hpp"
-#include "autosql/parse/constraint.hpp"
+// #include "autosql/schema/column.hpp"
 #include "autosql/schema/expression.hpp"
-#include "autosql/symbols.hpp"
+
+import asql.parse;
+import asql.symbols;
 
 namespace asql {
 
@@ -29,10 +31,10 @@ class ForeignKey {
 
 public:
   ForeignKey(const Database& database, const Column& column,
-             const parse::ForeignKeyParse<parse::ColumnParse>& fk);
+             const parse::ForeignKeyColumnParse& fk);
 
   ForeignKey(const Database& database, const Table& table,
-             const parse::ForeignKeyParse<parse::TableParse>& fk);
+             const parse::ForeignKeyTableParse& fk);
 };
 
 class Unique {
@@ -40,11 +42,10 @@ class Unique {
   std::vector<const Column*> columns_;
 
 public:
-  Unique(const Column& col,
-         const parse::UniqueParse<parse::ColumnParse>& unique)
+  Unique(const Column& col, const parse::UniqueColumnParse& unique)
     : name_{unique.name_}, columns_{&col} {}
 
-  Unique(const Table& table, const parse::UniqueParse<parse::TableParse>& unique);
+  Unique(const Table& table, const parse::UniqueTableParse& unique);
 };
 
 }  // namespace asql

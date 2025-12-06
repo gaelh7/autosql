@@ -1,14 +1,18 @@
-#pragma once
+module;
 
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-#include "autosql/parse/expression.hpp"
-#include "autosql/symbols.hpp"
+export module asql.parse:constraint;
 
-namespace asql::parse {
+import :parser;
+import :expression;
+
+import asql.symbols;
+
+export namespace asql::parse {
 
 class CheckParse {
 public:
@@ -23,49 +27,36 @@ public:
   }
 };
 
-class ColumnParse;
-class TableParse;
-
-template <typename T>
-class ForeignKeyParse;
-
-template <>
-class ForeignKeyParse<ColumnParse> {
+class ForeignKeyColumnParse {
 public:
   Identifier name_;
   std::string table_;
   std::string column_;
 
-  ForeignKeyParse(std::string_view name, Lexer& tokens);
+  ForeignKeyColumnParse(std::string_view name, Lexer& tokens);
 };
 
-template <>
-class ForeignKeyParse<TableParse> {
+class ForeignKeyTableParse {
 public:
   Identifier name_;
   std::string table_;
   std::vector<std::pair<std::string, std::string>> columns_;
 
-  ForeignKeyParse(std::string_view name, Lexer& tokens);
+  ForeignKeyTableParse(std::string_view name, Lexer& tokens);
 };
 
-template <typename T>
-class UniqueParse;
-
-template <>
-class UniqueParse<ColumnParse> {
+class UniqueColumnParse {
 public:
   Identifier name_;
 
-  UniqueParse(std::string_view name) : name_{name} {}
+  UniqueColumnParse(std::string_view name) : name_{name} {}
 };
 
-template <>
-class UniqueParse<TableParse> {
+class UniqueTableParse {
 public:
   Identifier name_;
   std::vector<std::string> columns_;
 
-  UniqueParse(std::string_view name, Lexer& tokens);
+  UniqueTableParse(std::string_view name, Lexer& tokens);
 };
 }  // namespace asql::parse

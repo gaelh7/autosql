@@ -1,5 +1,9 @@
 #include "autosql/schema/database.hpp"
 
+#include <string>
+
+import asql.parse;
+
 namespace asql {
 
 Database::Database(const parse::DatabaseParse& database) {

@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include <functional>
 #include <optional>
@@ -6,20 +6,22 @@
 #include <unordered_map>
 #include <vector>
 
-#include "autosql/parse/column.hpp"
-#include "autosql/parse/constraint.hpp"
-#include "autosql/parse/parser.hpp"
-#include "autosql/symbols.hpp"
+export module asql.parse:table;
 
-namespace asql::parse {
+import :parser;
+import :column;
+import :constraint;
+import asql.symbols;
+
+export namespace asql::parse {
 
 class TableParse {
 public:
   Identifier name;
   std::unordered_map<Identifier, ColumnParse, IdHash, std::equal_to<>> columns;
-  std::vector<UniqueParse<TableParse>> unique_cons;
+  std::vector<UniqueTableParse> unique_cons;
   std::vector<CheckParse> check_cons;
-  std::vector<ForeignKeyParse<TableParse>> ref_cons;
+  std::vector<ForeignKeyTableParse> ref_cons;
   std::vector<std::string> primary_key;
 
   TableParse() = default;

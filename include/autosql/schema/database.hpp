@@ -3,9 +3,10 @@
 #include <functional>
 #include <unordered_map>
 
-#include "autosql/parse/database.hpp"
 #include "autosql/schema/table.hpp"
-#include "autosql/symbols.hpp"
+
+import asql.parse;
+import asql.symbols;
 
 namespace asql {
 

@@ -1,7 +1,12 @@
-#include "autosql/parse/table.hpp"
+module;
 
-#include "autosql/parse/parser.hpp"
-#include "autosql/symbols.hpp"
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+module asql.parse;
+
+import asql.symbols;
 
 namespace asql::parse {
 
@@ -23,18 +28,21 @@ TableParse::TableParse(Lexer& tokens) {
         break;
       case TokenId::Unique:
         if (con_name.empty())
-          con_name = std::string{name} + "_uq" + std::to_string(unique_cons.size());
+          con_name =
+              std::string{name} + "_uq" + std::to_string(unique_cons.size());
         unique_cons.emplace_back(con_name, ++tokens);
         break;
       case TokenId::Check:
         if (con_name.empty())
-          con_name = std::string{name} + "_ck" + std::to_string(check_cons.size());
+          con_name =
+              std::string{name} + "_ck" + std::to_string(check_cons.size());
         check_cons.emplace_back(con_name, ++tokens);
         break;
       case TokenId::Foreign:
         (++tokens).expect(TokenId::Key);
         if (con_name.empty())
-          con_name = std::string{name} + "_fk" + std::to_string(ref_cons.size());
+          con_name =
+              std::string{name} + "_fk" + std::to_string(ref_cons.size());
         ref_cons.emplace_back(con_name, ++tokens);
         break;
       default: throw std::runtime_error("Error: Expected column or constraint");

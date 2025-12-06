@@ -1,9 +1,12 @@
 #pragma once
 
-#include "autosql/parse/column.hpp"
+#include <optional>
+
 #include "autosql/schema/datatype.hpp"
 #include "autosql/schema/expression.hpp"
-#include "autosql/symbols.hpp"
+
+import asql.parse;
+import asql.symbols;
 
 namespace asql {
 

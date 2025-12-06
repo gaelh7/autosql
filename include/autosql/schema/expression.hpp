@@ -1,6 +1,6 @@
 #pragma once
 
-#include "autosql/parse/expression.hpp"
+import asql.parse;
 
 namespace asql {
 

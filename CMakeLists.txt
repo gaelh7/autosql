@@ -4,7 +4,20 @@ project(autosql VERSION 1.0
                 DESCRIPTION "Automatically produce sql schema diffs"
                 LANGUAGES C CXX)
 
+add_library(symbols STATIC)
+target_compile_features(symbols PUBLIC cxx_std_23)
+target_compile_options(symbols PRIVATE $<IF:$<CXX_COMPILER_ID:MSVC>,
+                        /W4 /WX,
+                        -Wall -Wextra -Wpedantic -Werror>)
+target_sources(symbols
+               PUBLIC FILE_SET CXX_MODULES TYPE CXX_MODULES
+               BASE_DIRS include
+                FILES
+                  include/autosql/symbols.cppm
+)
+
 add_library(parse STATIC)
+target_link_libraries(parse PRIVATE symbols)
 target_compile_features(parse PUBLIC cxx_std_23)
 target_compile_options(parse PRIVATE $<IF:$<CXX_COMPILER_ID:MSVC>,
                         /W4 /WX,
@@ -18,20 +31,22 @@ target_sources(parse
                 src/autosql/parse/datatype.cpp
                 src/autosql/parse/expression.cpp
                PUBLIC
-               FILE_SET HEADERS TYPE HEADERS
+               FILE_SET CXX_MODULES TYPE CXX_MODULES
                BASE_DIRS include
                FILES
-                include/autosql/parse/parser.hpp
-                include/autosql/parse/table.hpp
-                include/autosql/parse/column.hpp
-                include/autosql/parse/constraint.hpp
-                include/autosql/parse/datatype.hpp
-                include/autosql/parse/expression.hpp
+                include/autosql/parse/parse.cppm
+                include/autosql/parse/parser.cppm
+                include/autosql/parse/datatype.cppm
+                include/autosql/parse/expression.cppm
+                include/autosql/parse/constraint.cppm
+                include/autosql/parse/column.cppm
+                include/autosql/parse/table.cppm
+                include/autosql/parse/database.cppm
 )
 
 add_library(schema STATIC)
+target_link_libraries(schema PRIVATE symbols parse)
 target_compile_features(schema PUBLIC cxx_std_23)
-target_link_libraries(schema PRIVATE parse)
 # target_compile_options(schema PRIVATE $<IF:$<CXX_COMPILER_ID:MSVC>,
 #                         /W4 /WX,
 #                         -Wall -Wextra -Wpedantic -Werror>)

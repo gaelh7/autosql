@@ -1,12 +1,14 @@
-#pragma once
+module;
 
 #include <string>
 #include <vector>
 
-#include "autosql/parse/parser.hpp"
-#include "autosql/symbols.hpp"
+export module asql.parse:expression;
 
-namespace asql::parse {
+import :parser;
+import asql.symbols;
+
+export namespace asql::parse {
 
 class ExpressionParse {
   std::vector<Operator> tokens_;

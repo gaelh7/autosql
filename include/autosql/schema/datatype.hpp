@@ -1,7 +1,7 @@
 #pragma once
 
-#include "autosql/parse/datatype.hpp"
-#include "autosql/symbols.hpp"
+import asql.parse;
+import asql.symbols;
 
 namespace asql {
 

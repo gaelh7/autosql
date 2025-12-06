@@ -1,14 +1,16 @@
-#include "autosql/parse/constraint.hpp"
+module;
 
 #include <span>
 #include <stdexcept>
 
-#include "autosql/symbols.hpp"
+module asql.parse;
+
+import asql.symbols;
 
 namespace asql::parse {
 
-ForeignKeyParse<ColumnParse>::ForeignKeyParse(std::string_view name,
-                                              Lexer& tokens)
+ForeignKeyColumnParse::ForeignKeyColumnParse(std::string_view name,
+                                             Lexer& tokens)
   : name_{name} {
   table_ = tokens->str();
   (++tokens).expect(TokenId::OpenPar);
@@ -17,8 +19,7 @@ ForeignKeyParse<ColumnParse>::ForeignKeyParse(std::string_view name,
   ++tokens;
 }
 
-ForeignKeyParse<TableParse>::ForeignKeyParse(std::string_view name,
-                                             Lexer& tokens)
+ForeignKeyTableParse::ForeignKeyTableParse(std::string_view name, Lexer& tokens)
   : name_{name} {
   tokens.expect(TokenId::OpenPar);
   while (tokens->type != TokenId::ClosePar) {
@@ -43,7 +44,7 @@ ForeignKeyParse<TableParse>::ForeignKeyParse(std::string_view name,
   ++tokens;
 }
 
-UniqueParse<TableParse>::UniqueParse(std::string_view name, Lexer& tokens)
+UniqueTableParse::UniqueTableParse(std::string_view name, Lexer& tokens)
   : name_{name} {
   tokens.expect(TokenId::OpenPar);
   while (tokens->type != TokenId::ClosePar) {

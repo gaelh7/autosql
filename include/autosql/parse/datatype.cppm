@@ -1,11 +1,13 @@
-#pragma once
+module;
 
 #include <string_view>
 
-#include "autosql/parse/parser.hpp"
-#include "autosql/symbols.hpp"
+export module asql.parse:datatype;
 
-namespace asql::parse {
+import :parser;
+import asql.symbols;
+
+export namespace asql::parse {
 
 enum class RawType {
   User,

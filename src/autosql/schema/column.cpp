@@ -1,7 +1,8 @@
 #include "autosql/schema/column.hpp"
 
-#include "autosql/parse/column.hpp"
 #include "autosql/schema/constraint.hpp"
+
+import asql.parse;
 
 namespace asql {
 

@@ -1,12 +1,15 @@
 #pragma once
 
 #include <functional>
+#include <string_view>
 #include <unordered_map>
 
-#include "autosql/parse/table.hpp"
 #include "autosql/schema/column.hpp"
 #include "autosql/schema/constraint.hpp"
-#include "autosql/symbols.hpp"
+
+
+import asql.parse;
+import asql.symbols;
 
 namespace asql {
 

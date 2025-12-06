@@ -1,6 +1,6 @@
 #include "autosql/schema/datatype.hpp"
 
-#include "autosql/parse/datatype.hpp"
+import asql.parse;
 
 namespace asql {
 

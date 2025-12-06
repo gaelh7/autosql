@@ -1,11 +1,13 @@
-#pragma once
+module;
 
 #include <functional>
 #include <stdexcept>
 #include <string>
 #include <string_view>
 
-namespace asql {
+export module asql.symbols;
+
+export namespace asql {
 
 enum class TokenId {
   Unspecified,

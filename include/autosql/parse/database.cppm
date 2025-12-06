@@ -1,14 +1,16 @@
-#pragma once
+module;
 
 #include <filesystem>
 #include <functional>
 #include <unordered_map>
 
-#include "autosql/parse/parser.hpp"
-#include "autosql/parse/table.hpp"
-#include "autosql/symbols.hpp"
+export module asql.parse:database;
 
-namespace asql::parse {
+import :parser;
+import :table;
+import asql.symbols;
+
+export namespace asql::parse {
 
 class DatabaseParse {
 public:

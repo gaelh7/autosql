@@ -1,13 +1,15 @@
-#pragma once
+module;
 
 #include <cstddef>
 #include <filesystem>
 #include <fstream>
 #include <string>
 
-#include "autosql/symbols.hpp"
+export module asql.parse:parser;
 
-namespace asql::parse {
+import asql.symbols;
+
+export namespace asql::parse {
 
 class Lexer {
   std::ifstream file_;

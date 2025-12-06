@@ -1,10 +1,11 @@
-#include "autosql/parse/datatype.hpp"
+module;
 
 #include <stdexcept>
 #include <string_view>
 
-#include "autosql/parse/parser.hpp"
-#include "autosql/symbols.hpp"
+module asql.parse;
+
+import asql.symbols;
 
 namespace asql::parse {
 

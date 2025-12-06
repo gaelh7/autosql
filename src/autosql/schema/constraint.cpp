@@ -1,14 +1,17 @@
 #include "autosql/schema/constraint.hpp"
 
+#include <format>
 #include <stdexcept>
 
-#include "autosql/parse/constraint.hpp"
 #include "autosql/schema/database.hpp"
+
+
+import asql.parse;
 
 namespace asql {
 
 ForeignKey::ForeignKey(const Database& database, const Column& column,
-                       const parse::ForeignKeyParse<parse::ColumnParse>& fk)
+                       const parse::ForeignKeyColumnParse& fk)
   : name_{fk.name_} {
   table_ = database.table(fk.table_);
   if (!table_)
@@ -22,7 +25,7 @@ ForeignKey::ForeignKey(const Database& database, const Column& column,
 }
 
 ForeignKey::ForeignKey(const Database& database, const Table& table,
-                       const parse::ForeignKeyParse<parse::TableParse>& fk)
+                       const parse::ForeignKeyTableParse& fk)
   : name_{fk.name_} {
   table_ = database.table(fk.table_);
   if (!table_)
@@ -38,14 +41,14 @@ ForeignKey::ForeignKey(const Database& database, const Table& table,
   }
 }
 
-Unique::Unique(const Table& table,
-               const parse::UniqueParse<parse::TableParse>& unique)
+Unique::Unique(const Table& table, const parse::UniqueTableParse& unique)
   : name_{unique.name_} {
   columns_.reserve(unique.columns_.size());
   for (std::string_view col : unique.columns_) {
     const Column* column = table.column(col);
     if (!column)
-      throw std::runtime_error(std::format("Error: Column '{}' does not exist", col));
+      throw std::runtime_error(
+          std::format("Error: Column '{}' does not exist", col));
     columns_.push_back(column);
   }
 }

@@ -1,10 +1,10 @@
-
-#include "autosql/parse/column.hpp"
+module;
 
 #include <stdexcept>
 
-#include "autosql/parse/datatype.hpp"
-#include "autosql/symbols.hpp"
+module asql.parse;
+
+import asql.symbols;
 
 namespace asql::parse {
 
@@ -37,12 +37,12 @@ void ColumnParse::parse_constraints(Lexer& tokens) {
         continue;
       case TokenId::Unique:
         if (con_name.empty()) con_name = std::string{name} + "_uq";
-        unique = UniqueParse<ColumnParse>{con_name};
+        unique = UniqueColumnParse{con_name};
         ++tokens;
         continue;
       case TokenId::References: {
         if (con_name.empty()) con_name = std::string{name} + "_fk";
-        reference = ForeignKeyParse<ColumnParse>{con_name, ++tokens};
+        reference = ForeignKeyColumnParse{con_name, ++tokens};
         continue;
       }
       case TokenId::Check:

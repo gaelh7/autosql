@@ -1,14 +1,16 @@
-#pragma once
+module;
 
 #include <optional>
 
-#include "autosql/parse/constraint.hpp"
-#include "autosql/parse/datatype.hpp"
-#include "autosql/parse/expression.hpp"
-#include "autosql/parse/parser.hpp"
-#include "autosql/symbols.hpp"
+export module asql.parse:column;
 
-namespace asql::parse {
+import :parser;
+import :datatype;
+import :expression;
+import :constraint;
+import asql.symbols;
+
+export namespace asql::parse {
 
 class ColumnParse {
   void parse_constraints(Lexer& tokens);
@@ -18,8 +20,8 @@ public:
   DatatypeParse type;
   std::optional<ExpressionParse> expr;
   std::optional<CheckParse> check;
-  std::optional<ForeignKeyParse<ColumnParse>> reference;
-  std::optional<UniqueParse<ColumnParse>> unique;
+  std::optional<ForeignKeyColumnParse> reference;
+  std::optional<UniqueColumnParse> unique;
   bool not_null  = false;
   bool generated = false;
 

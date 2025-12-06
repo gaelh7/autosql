@@ -1,12 +1,15 @@
-#include "autosql/parse/parser.hpp"
+module;
 
 #include <format>
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <filesystem>
 
-#include "autosql/symbols.hpp"
+module asql.parse;
+
+import asql.symbols;
 
 namespace asql::parse {
 

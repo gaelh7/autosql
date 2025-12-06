@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-#include "autosql/parse/table.hpp"
+import asql.parse;
 
 namespace asql {
 
