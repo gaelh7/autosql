@@ -1,17 +1,18 @@
-#pragma once
+module;
 
 #include <functional>
 #include <string_view>
 #include <unordered_map>
 
-#include "autosql/schema/column.hpp"
-#include "autosql/schema/constraint.hpp"
+export module asql.schema:table;
 
+import :column;
+import :constraint;
 
 import asql.parse;
 import asql.symbols;
 
-namespace asql {
+export namespace asql {
 
 class Table {
   Identifier name_;
@@ -24,8 +25,7 @@ class Table {
 public:
   Table(const parse::TableParse& table);
 
-  void set_constraints(const Database& database,
-                       const parse::TableParse& table);
+  void add_reference_constraint(const ForeignKey& fk);
 
   const Column* column(std::string_view name) const;
 };

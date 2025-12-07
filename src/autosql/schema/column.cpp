@@ -1,6 +1,6 @@
-#include "autosql/schema/column.hpp"
+module;
 
-#include "autosql/schema/constraint.hpp"
+module asql.schema;
 
 import asql.parse;
 

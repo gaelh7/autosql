@@ -1,8 +1,7 @@
 #include <iostream>
 
-#include "autosql/schema/database.hpp"
-
 import asql.parse;
+import asql.schema;
 
 int main() {
   asql::parse::DatabaseParse db1{

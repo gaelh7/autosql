@@ -58,14 +58,16 @@ target_sources(schema
                 src/autosql/schema/constraint.cpp
                 src/autosql/schema/datatype.cpp
                PUBLIC
-               FILE_SET HEADERS TYPE HEADERS
+               FILE_SET CXX_MODULES TYPE CXX_MODULES
                BASE_DIRS include
                FILES
-                include/autosql/schema/database.hpp
-                include/autosql/schema/table.hpp
-                include/autosql/schema/column.hpp
-                include/autosql/schema/constraint.hpp
-                include/autosql/schema/datatype.hpp
+                include/autosql/schema/column.cppm
+                include/autosql/schema/constraint.cppm
+                include/autosql/schema/database.cppm
+                include/autosql/schema/datatype.cppm
+                include/autosql/schema/expression.cppm
+                include/autosql/schema/schema.cppm
+                include/autosql/schema/table.cppm
 )
 
 add_executable(main src/main.cpp)

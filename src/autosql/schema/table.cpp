@@ -1,6 +1,8 @@
-#include "autosql/schema/table.hpp"
+module;
 
 #include <stdexcept>
+
+module asql.schema;
 
 import asql.parse;
 
@@ -17,14 +19,8 @@ Table::Table(const parse::TableParse& table) : name_{table.name} {
                                "' does not exist");
     primary_key.push_back(&it->second);
   }
-}
-
-void Table::set_constraints(const Database& database,
-                            const parse::TableParse& table) {
   for (const auto& [name, col] : table.columns) {
     if (col.check) check_cons.emplace_back(*col.check);
-    if (col.reference)
-      ref_cons.emplace_back(database, columns_[name], *col.reference);
     if (col.unique) unique_cons.emplace_back(col, *col.unique);
   }
   check_cons.insert(check_cons.end(), table.check_cons.begin(),
@@ -32,9 +28,10 @@ void Table::set_constraints(const Database& database,
   for (const auto& unique : table.unique_cons) {
     unique_cons.emplace_back(*this, unique);
   }
-  for (const auto& con : table.ref_cons) {
-    ref_cons.emplace_back(database, *this, con);
-  }
+}
+
+void Table::add_reference_constraint(const ForeignKey& fk) {
+  ref_cons.push_back(fk);
 }
 
 const Column* Table::column(std::string_view name) const {

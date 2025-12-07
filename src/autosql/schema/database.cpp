@@ -1,6 +1,10 @@
-#include "autosql/schema/database.hpp"
+module;
 
 #include <string>
+
+module asql.schema;
+
+import :table;
 
 import asql.parse;
 
@@ -12,7 +16,15 @@ Database::Database(const parse::DatabaseParse& database) {
   }
 
   for (auto& [name, table] : tables_) {
-    table.set_constraints(*this, database.tables_.at(name));
+    auto table_parse = database.tables_.at(name);
+    for (const auto& [name, col] : table_parse.columns) {
+      if (col.reference)
+        table.add_reference_constraint(
+            ForeignKey(*this->table(col.reference->table_), *table.column(name), *col.reference));
+    }
+    for (const auto& con : table_parse.ref_cons) {
+      table.add_reference_constraint(ForeignKey(*this->table(con.table_), table, con));
+    }
   }
 }
 

@@ -1,15 +1,17 @@
-#pragma once
+module;
 
 #include <utility>
 #include <vector>
 
-// #include "autosql/schema/column.hpp"
-#include "autosql/schema/expression.hpp"
+export module asql.schema:constraint;
+
+import :expression;
+import :column;
 
 import asql.parse;
 import asql.symbols;
 
-namespace asql {
+export namespace asql {
 
 class Check {
   Identifier name_;
@@ -20,9 +22,7 @@ public:
     : name_{check.name_}, expr_{check.expr_} {}
 };
 
-class Column;
 class Table;
-class Database;
 
 class ForeignKey {
   Identifier name_;
@@ -30,10 +30,10 @@ class ForeignKey {
   std::vector<std::pair<const Column*, const Column*>> columns_;
 
 public:
-  ForeignKey(const Database& database, const Column& column,
+  ForeignKey(const Table& parent, const Column& column,
              const parse::ForeignKeyColumnParse& fk);
 
-  ForeignKey(const Database& database, const Table& table,
+  ForeignKey(const Table& parent, const Table& table,
              const parse::ForeignKeyTableParse& fk);
 };
 

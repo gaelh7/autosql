@@ -1,9 +1,11 @@
-#pragma once
+module;
+
+export module asql.schema:datatype;
 
 import asql.parse;
 import asql.symbols;
 
-namespace asql {
+export namespace asql {
 
 enum class TypeId {
   Struct,

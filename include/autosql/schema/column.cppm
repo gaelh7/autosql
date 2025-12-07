@@ -1,16 +1,16 @@
-#pragma once
+module;
 
 #include <optional>
 
-#include "autosql/schema/datatype.hpp"
-#include "autosql/schema/expression.hpp"
+export module asql.schema:column;
+
+import :datatype;
+import :expression;
 
 import asql.parse;
 import asql.symbols;
 
-namespace asql {
-
-class Database;
+export namespace asql {
 
 class Column {
   Identifier name_;

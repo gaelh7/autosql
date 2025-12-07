@@ -1,37 +1,26 @@
-#include "autosql/schema/constraint.hpp"
+module;
 
 #include <format>
 #include <stdexcept>
 
-#include "autosql/schema/database.hpp"
-
+module asql.schema;
 
 import asql.parse;
 
 namespace asql {
 
-ForeignKey::ForeignKey(const Database& database, const Column& column,
+ForeignKey::ForeignKey(const Table& parent, const Column& column,
                        const parse::ForeignKeyColumnParse& fk)
-  : name_{fk.name_} {
-  table_ = database.table(fk.table_);
-  if (!table_)
-    throw std::runtime_error("Error: Undefined reference to table: " +
-                             fk.table_);
-
+  : table_{&parent}, name_{fk.name_} {
   columns_.push_back({&column, table_->column(fk.column_)});
   if (!columns_[0].second)
     throw std::runtime_error("Error: Column '" + fk.column_ +
                              "' not found in table '" + fk.table_ + "'");
 }
 
-ForeignKey::ForeignKey(const Database& database, const Table& table,
+ForeignKey::ForeignKey(const Table& parent, const Table& table,
                        const parse::ForeignKeyTableParse& fk)
-  : name_{fk.name_} {
-  table_ = database.table(fk.table_);
-  if (!table_)
-    throw std::runtime_error("Error: Undefined reference to table: " +
-                             fk.table_);
-
+  : table_{&parent}, name_{fk.name_} {
   columns_.reserve(fk.columns_.size());
   for (const auto& [col, ref] : fk.columns_) {
     columns_.push_back({table.column(col), table_->column(ref)});

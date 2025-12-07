@@ -1,4 +1,4 @@
-#include "autosql/schema/datatype.hpp"
+module asql.schema;
 
 import asql.parse;
 

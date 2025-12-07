@@ -1,8 +1,8 @@
-#pragma once
+export module asql.schema:expression;
 
 import asql.parse;
 
-namespace asql {
+export namespace asql {
 
 class Expression {
 public:

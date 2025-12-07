@@ -1,14 +1,17 @@
-#pragma once
+module;
 
 #include <functional>
 #include <unordered_map>
+#include <string_view>
 
-#include "autosql/schema/table.hpp"
+export module asql.schema:database;
+
+import :table;
 
 import asql.parse;
 import asql.symbols;
 
-namespace asql {
+export namespace asql {
 
 class Database {
   std::unordered_map<Identifier, Table, IdHash, std::equal_to<>> tables_;
