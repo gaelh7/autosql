@@ -1,6 +1,7 @@
 module;
 
 #include <optional>
+#include <string_view>
 
 export module asql.schema:column;
 
@@ -23,6 +24,16 @@ public:
   Column() = default;
 
   Column(const parse::ColumnParse& col);
+
+  std::string_view name() const;
+
+  const Datatype& type() const;
+
+  const std::optional<Expression>& expr() const;
+
+  bool nullable() const;
+
+  bool is_generated() const;
 };
 
 }  // namespace asql

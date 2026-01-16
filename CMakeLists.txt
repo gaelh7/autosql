@@ -10,7 +10,7 @@ target_compile_options(symbols PRIVATE $<IF:$<CXX_COMPILER_ID:MSVC>,
                         /W4 /WX,
                         -Wall -Wextra -Wpedantic -Werror>)
 target_sources(symbols
-               PUBLIC FILE_SET CXX_MODULES TYPE CXX_MODULES
+               PUBLIC FILE_SET CXX_MODULES
                BASE_DIRS include
                 FILES
                   include/autosql/symbols.cppm
@@ -31,7 +31,7 @@ target_sources(parse
                 src/autosql/parse/datatype.cpp
                 src/autosql/parse/expression.cpp
                PUBLIC
-               FILE_SET CXX_MODULES TYPE CXX_MODULES
+               FILE_SET CXX_MODULES
                BASE_DIRS include
                FILES
                 include/autosql/parse/parse.cppm
@@ -47,9 +47,9 @@ target_sources(parse
 add_library(schema STATIC)
 target_link_libraries(schema PRIVATE symbols parse)
 target_compile_features(schema PUBLIC cxx_std_23)
-# target_compile_options(schema PRIVATE $<IF:$<CXX_COMPILER_ID:MSVC>,
-#                         /W4 /WX,
-#                         -Wall -Wextra -Wpedantic -Werror>)
+target_compile_options(schema PRIVATE $<IF:$<CXX_COMPILER_ID:MSVC>,
+                        /W4 /WX,
+                        -Wall -Wextra -Wpedantic -Werror>)
 target_sources(schema
                PRIVATE
                 src/autosql/schema/database.cpp
@@ -58,7 +58,7 @@ target_sources(schema
                 src/autosql/schema/constraint.cpp
                 src/autosql/schema/datatype.cpp
                PUBLIC
-               FILE_SET CXX_MODULES TYPE CXX_MODULES
+               FILE_SET CXX_MODULES
                BASE_DIRS include
                FILES
                 include/autosql/schema/column.cppm
@@ -68,6 +68,25 @@ target_sources(schema
                 include/autosql/schema/expression.cppm
                 include/autosql/schema/schema.cppm
                 include/autosql/schema/table.cppm
+)
+
+add_library(diff STATIC)
+target_link_libraries(diff PRIVATE symbols parse schema)
+target_compile_features(diff PUBLIC cxx_std_23)
+target_compile_options(diff PRIVATE $<IF:$<CXX_COMPILER_ID:MSVC>,
+                        /W4 /WX,
+                        -Wall -Wextra -Wpedantic -Werror>)
+target_sources(diff
+               PRIVATE
+                src/autosql/diff/column.cpp
+                src/autosql/diff/datatype.cpp
+               PUBLIC
+               FILE_SET CXX_MODULES
+               BASE_DIRS include
+               FILES
+                include/autosql/diff/column.cppm
+                include/autosql/diff/datatype.cppm
+                include/autosql/diff/diff.cppm
 )
 
 add_executable(main src/main.cpp)

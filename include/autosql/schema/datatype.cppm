@@ -1,5 +1,7 @@
 module;
 
+#include <string_view>
+
 export module asql.schema:datatype;
 
 import asql.parse;
@@ -35,6 +37,10 @@ public:
   Datatype() = default;
 
   Datatype(const parse::DatatypeParse& type);
+
+  std::string_view name() const;
+
+  bool operator==(const Datatype& other) const;
 };
 
 }  // namespace asql

@@ -11,7 +11,7 @@ namespace asql {
 
 ForeignKey::ForeignKey(const Table& parent, const Column& column,
                        const parse::ForeignKeyColumnParse& fk)
-  : table_{&parent}, name_{fk.name_} {
+  : name_{fk.name_}, table_{&parent} {
   columns_.push_back({&column, table_->column(fk.column_)});
   if (!columns_[0].second)
     throw std::runtime_error("Error: Column '" + fk.column_ +
@@ -20,7 +20,7 @@ ForeignKey::ForeignKey(const Table& parent, const Column& column,
 
 ForeignKey::ForeignKey(const Table& parent, const Table& table,
                        const parse::ForeignKeyTableParse& fk)
-  : table_{&parent}, name_{fk.name_} {
+  : name_{fk.name_}, table_{&parent} {
   columns_.reserve(fk.columns_.size());
   for (const auto& [col, ref] : fk.columns_) {
     columns_.push_back({table.column(col), table_->column(ref)});

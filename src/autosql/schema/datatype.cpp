@@ -1,3 +1,7 @@
+module;
+
+#include <string_view>
+
 module asql.schema;
 
 import asql.parse;
@@ -22,6 +26,51 @@ Datatype::Datatype(const parse::DatatypeParse& type)
     case parse::RawType::Timestamp: id_ = TypeId::Timestamp; break;
     case parse::RawType::Interval: id_ = TypeId::Interval; break;
     case parse::RawType::Json: id_ = TypeId::Json; break;
+  }
+}
+
+std::string_view Datatype::name() const {
+  switch (id_) {
+    case TypeId::Struct:
+    case TypeId::Enum: return name_;
+    case TypeId::Bool: return "BOOL";
+    case TypeId::Bytes: return "BYTES";
+    case TypeId::Int32: return "INT32";
+    case TypeId::Int64: return "INT64";
+    case TypeId::Float: return "FLOAT";
+    case TypeId::Double: return "DOUBLE";
+    case TypeId::Numeric: return "NUMERIC";
+    case TypeId::String: return "STRING";
+    case TypeId::Date: return "DATE";
+    case TypeId::Time: return "TIME";
+    case TypeId::Datetime: return "DATETIME";
+    case TypeId::Timestamp: return "TIMESTAMP";
+    case TypeId::Interval: return "INTERVAL";
+    case TypeId::Json: return "JSON";
+  }
+  return "";  // Unreachable
+}
+
+bool Datatype::operator==(const Datatype& other) const {
+  if (is_array != other.is_array) return false;
+  switch (id_) {
+    case TypeId::Struct:
+    case TypeId::Enum:
+      return name_ == other.name_;
+    case TypeId::Bool:
+    case TypeId::Bytes:
+    case TypeId::Int32:
+    case TypeId::Int64:
+    case TypeId::Float:
+    case TypeId::Double:
+    case TypeId::Numeric:
+    case TypeId::String:
+    case TypeId::Date:
+    case TypeId::Time:
+    case TypeId::Datetime:
+    case TypeId::Timestamp:
+    case TypeId::Interval:
+    case TypeId::Json: return id_ == other.id_;
   }
 }
 
